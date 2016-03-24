@@ -1,4 +1,4 @@
-login_one_time_expiry: ''
+login_one_time_expiry: 1209600
 login_one_time_user_widget: autocomplete
 login_one_time_path_front: true
 login_one_time_path_user: true

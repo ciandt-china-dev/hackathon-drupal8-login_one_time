@@ -3,7 +3,7 @@ login_one_time.settings:
   label: Settings
   mapping:
     login_one_time_expiry:
-      type: string
+      type: integer
     login_one_time_user_widget:
       type: string
     login_one_time_path_front:

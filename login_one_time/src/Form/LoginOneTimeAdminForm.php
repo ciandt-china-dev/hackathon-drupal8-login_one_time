@@ -28,7 +28,7 @@ class LoginOneTimeAdminForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = \Drupal::config('login_one_time.settings');
+    $config = $this->config('login_one_time.settings');
     $form['global'] = array(
       '#type' => 'fieldset',
       '#title' => t("Global settings"),
@@ -148,10 +148,22 @@ class LoginOneTimeAdminForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $time_expiry = $form_state->getValue('login_one_time_expiry');
+    if (!(is_numeric($time_expiry) && $time_expiry > 0)) {
+      $form_state->setErrorByName('login_one_time_expiry', t('The time expiry value must by number and bigger than 0.'));
+      return FALSE;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+
     $config = $this->config('login_one_time.settings');
     $config
-      ->set('login_one_time_expiry', $form_state->getValue('login_one_time_expiry'))
+      ->set('login_one_time_expiry', ltrim($form_state->getValue('login_one_time_expiry')), '0')
       ->set('login_one_time_user_widget', $form_state->getValue('login_one_time_user_widget'))
       ->set('login_one_time_mail_message', $form_state->getValue('login_one_time_mail_message'))
       ->set('login_one_time_path_front', $form_state->getValue('login_one_time_path_front'))
