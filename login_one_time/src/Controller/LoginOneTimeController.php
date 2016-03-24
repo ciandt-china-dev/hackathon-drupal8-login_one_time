@@ -5,12 +5,14 @@
 
 namespace Drupal\login_one_time\Controller;
 
-use \Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Controller\ControllerBase;
 use Drupal\user\Entity\User;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use \Symfony\Component\HttpFoundation\Request;
-use \Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\Request;
+use Drupal\Core\Url;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Drupal\login_one_time\LoginOneTimeOption;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class LoginOneTimeController extends ControllerBase {
 
@@ -110,4 +112,12 @@ class LoginOneTimeController extends ControllerBase {
     return urlencode($_REQUEST['destination']);
   }
 
+  public function autocomplete() {
+    // If the request has a '/' in the search text, then the menu system will have
+    // split it into multiple arguments, recover the intended $autocomplete.
+    $args = func_get_args();
+    $autocomplete = implode('/', $args);
+
+    return new JsonResponse(LoginOneTimeOption::userOptions($autocomplete));
+  }
 }

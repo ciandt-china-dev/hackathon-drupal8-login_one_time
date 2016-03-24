@@ -16,7 +16,7 @@ login_one_time.admin:
 login_one_time.autocomplete:
   path: 'login_one_time_autocomplete_users'
   defaults:
-    _form: '\Drupal\login_one_time\Form\LoginOneTimeAdminForm'
+    _controller: '\Drupal\login_one_time\Controller\LoginOneTimeController::autocomplete'
     _title: 'Login one time autocomplete users'
   requirements:
     _permission: 'access content'

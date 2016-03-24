@@ -77,14 +77,14 @@ function login_one_time_variable_info($options) {
 /**
  * Retrieve a pipe delimited string of autocomplete suggestions.
  */
-function login_one_time_autocomplete_users($autocomplete = '') {
-  // If the request has a '/' in the search text, then the menu system will have
-  // split it into multiple arguments, recover the intended $autocomplete.
-  $args = func_get_args();
-  $autocomplete = implode('/', $args);
-
-  drupal_json_output(login_one_time_user_options($autocomplete));
-}
+//function login_one_time_autocomplete_users($autocomplete = '') {
+//  // If the request has a '/' in the search text, then the menu system will have
+//  // split it into multiple arguments, recover the intended $autocomplete.
+//  $args = func_get_args();
+//  $autocomplete = implode('/', $args);
+//
+//  drupal_json_output(login_one_time_user_options($autocomplete));
+//}
 
 /**
  * Menu callback to configure module settings.

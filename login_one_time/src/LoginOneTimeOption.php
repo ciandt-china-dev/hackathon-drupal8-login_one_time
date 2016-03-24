@@ -38,7 +38,7 @@ class LoginOneTimeOption {
   public static function userWidget($username = NULL, $title = NULL) {
     $accounts = array();
     $config = \Drupal::config('login_one_time.settings');
-    if ($config->get('login_one_time_user_widget', 'autocomplete') == 'autocomplete') {
+    if ($config->get('login_one_time_user_widget') == 'autocomplete') {
       // Only return users with a permitted role id.
       $permitted_role_ids = array_keys(user_roles(TRUE, 'use link to login one time'));
       $form = array(
