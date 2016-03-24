@@ -10,7 +10,7 @@ use \Symfony\Component\HttpFoundation\Request;
 
 class LoginOneTimeController extends ControllerBase {
 
-  public function page(Request $request, $first, $second, $three) {
+  public function page(Request $request, $first, $second, $third) {
 
   }
 
