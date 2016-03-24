@@ -656,18 +656,34 @@ function login_one_time_mail_text($key, $path = NULL, $language = NULL, $variabl
 function login_one_time_mail($key, &$message, $params) {
   // This code handles a mixture of Drupal 6 legacy !variables and Drupal 7 tokens.
 
-  $language = $message['language'];
-  $path = &$params['path'];
-  $variables = login_one_time_mail_tokens($params['account'], $language, $path);
+  /*  $language = $message['language'];
+    $path = &$params['path'];
+    $variables = login_one_time_mail_tokens($params['account'], $language, $path);
 
-  $subject = login_one_time_mail_text($key . '_subject', $path, $language, $variables);
-  $body = login_one_time_mail_text($key . '_body', $path, $language, $variables);
+    $subject = login_one_time_mail_text($key . '_subject', $path, $language, $variables);
+    $body = login_one_time_mail_text($key . '_body', $path, $language, $variables);
 
-  $subject = \Drupal::token()->replace($subject, array('user' => $params['account']));
-  $body = \Drupal::token()->replace($body, array('user' => $params['account'], 'path' => $path));
+    $subject = \Drupal::token()->replace($subject, array('user' => $params['account']));
+    $body = \Drupal::token()->replace($body, array('user' => $params['account'], 'path' => $path));
 
-  $message['subject'] .= $subject;
-  $message['body'][] = $body;
+    $message['subject'] .= $subject;
+    $message['body'][] = $body;*/
+  if ($key == 'login_one_time_key') {
+    $language  = $message['language'];
+    $path      = &$params['path'];
+    $variables = login_one_time_mail_tokens($params['account'], $language, $path);
+
+    $subject = login_one_time_mail_text($key . '_subject', $path, $language, $variables);
+    $body    = login_one_time_mail_text($key . '_body', $path, $language, $variables);
+
+    $subject = \Drupal::token()
+      ->replace($subject, array('user' => $params['account']));
+    $body    = \Drupal::token()
+      ->replace($body, array('user' => $params['account'], 'path' => $path));
+
+    $message['subject'] .= $subject;
+    $message['body'][] = $body;
+  }
 }
 
 /**
