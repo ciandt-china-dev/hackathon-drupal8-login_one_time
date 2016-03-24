@@ -7,10 +7,10 @@ use \Symfony\Component\HttpFoundation\Request;
 use \Drupal\Core\Url;
 
 class LoginOneTimeSendMail {
-  static function sendMail(Request $request) {
+  static function sendMail(\Drupal\user\UserInterface $account, $path) {
     // test.
-    $account = user_load(1);
-    $result = LoginOneTimeSendMail::loginOneTimeSendMail($account, 'node/1');
+    //$account = user_load(1);
+    $result = LoginOneTimeSendMail::loginOneTimeSendMail($account, $path);
 
     return array("#markup" => $result);
   }
