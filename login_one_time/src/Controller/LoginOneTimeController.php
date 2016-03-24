@@ -63,7 +63,7 @@ class LoginOneTimeController extends ControllerBase {
           return $this->redirect('user.login');
         }
 
-        elseif ($timestamp > $account->getLastLoginTime() && $timestamp < $current && $hashed_pass == user_pass_rehash($account->pass, $timestamp, $account->login, $account->uid)) {
+        elseif ($timestamp > $account->getLastLoginTime() && $timestamp < $current && $hashed_pass == user_pass_rehash($account, $timestamp)) {
 
           $action = $this->get_action_path();
 
