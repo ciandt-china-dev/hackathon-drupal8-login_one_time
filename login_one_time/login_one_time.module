@@ -1,10 +1,12 @@
 <?php
-use  \drupal\login_one_time\Controller;
-use \Drupal\Core\Url;
 /**
+
  * @file
  * The Login one time module.
  */
+use \Drupal\login_one_time\Controller;
+use \Drupal\Core\Url;
+use \Drupal\login_one_time\Form\LoginOneTimeEmailTemplateForm;
 
 /**
  * Implements hook_variable_info().
@@ -789,64 +791,64 @@ function login_one_time_user_operations() {
   return $operations;
 }
 
-function login_one_time_path_options($path = NULL) {
-  $options = array();
-
-// Get variables and assemble the array.
-  if (\Drupal::config('login_one_time.settings')
-    ->get('login_one_time_path_front')
-  ) {
-    $options['login_one_time[front]'] = t("Front page");
-  }
-  if (\Drupal::config('login_one_time.settings')
-    ->get('login_one_time_path_user')
-  ) {
-    $options['user'] = t("User page");
-  }
-  if (\Drupal::config('login_one_time.settings')
-    ->get('login_one_time_path_user_edit')
-  ) {
-    $options['login_one_time[user_edit]'] = t("User edit page");
-  }
-  if (\Drupal::config('login_one_time.settings')
-    ->get('login_one_time_path_current')
-  ) {
-    $options['login_one_time[current]'] = t("Current page");
-  }
-  if (\Drupal::config('login_one_time.settings')
-    ->get('login_one_time_path_custom')
-  ) {
-    $customs = explode("\n", \Drupal::config('login_one_time.settings')
-      ->get('login_one_time_path_custom'));
-    if (is_array($customs)) {
-      foreach ($customs as $custom) {
-        $custom_option = explode("|", $custom);
-        $options[$custom_option[0]] = $custom_option[1] ? $custom_option[1] : $custom_option[0];
-      }
-    }
-  }
-
-// Include the $path in the $options, if not already there.
-// This may override some settings in some cases, but it kinda means those
-// settings were incomplete.
-  if ($path && !isset($options[$path])) {
-    if ($path == "login_one_time[current]") {
-      $display = t("Current page");
-    }
-    elseif ("login_one_time[front]") {
-      $display = t("Front page");
-    }
-    else {
-      $display = $path;
-    }
-    $options[$path] = $display;
-  }
-
-// Allow modules to modify this list correctly.
-  \Drupal::moduleHandler()->alter("login_one_time_path_options", $options);
-
-  return $options;
-}
+//function login_one_time_path_options($path = NULL) {
+//  $options = array();
+//
+//// Get variables and assemble the array.
+//  if (\Drupal::config('login_one_time.settings')
+//    ->get('login_one_time_path_front')
+//  ) {
+//    $options['login_one_time[front]'] = t("Front page");
+//  }
+//  if (\Drupal::config('login_one_time.settings')
+//    ->get('login_one_time_path_user')
+//  ) {
+//    $options['user'] = t("User page");
+//  }
+//  if (\Drupal::config('login_one_time.settings')
+//    ->get('login_one_time_path_user_edit')
+//  ) {
+//    $options['login_one_time[user_edit]'] = t("User edit page");
+//  }
+//  if (\Drupal::config('login_one_time.settings')
+//    ->get('login_one_time_path_current')
+//  ) {
+//    $options['login_one_time[current]'] = t("Current page");
+//  }
+//  if (\Drupal::config('login_one_time.settings')
+//    ->get('login_one_time_path_custom')
+//  ) {
+//    $customs = explode("\n", \Drupal::config('login_one_time.settings')
+//      ->get('login_one_time_path_custom'));
+//    if (is_array($customs)) {
+//      foreach ($customs as $custom) {
+//        $custom_option = explode("|", $custom);
+//        $options[$custom_option[0]] = $custom_option[1] ? $custom_option[1] : $custom_option[0];
+//      }
+//    }
+//  }
+//
+//// Include the $path in the $options, if not already there.
+//// This may override some settings in some cases, but it kinda means those
+//// settings were incomplete.
+//  if ($path && !isset($options[$path])) {
+//    if ($path == "login_one_time[current]") {
+//      $display = t("Current page");
+//    }
+//    elseif ("login_one_time[front]") {
+//      $display = t("Front page");
+//    }
+//    else {
+//      $display = $path;
+//    }
+//    $options[$path] = $display;
+//  }
+//
+//// Allow modules to modify this list correctly.
+//  \Drupal::moduleHandler()->alter("login_one_time_path_options", $options);
+//
+//  return $options;
+//}
 
 /**
  * Bulk send login one time links to users via email.
@@ -1088,32 +1090,12 @@ function login_one_time_send_mail_action(&$account, $context = array()) {
  * Create email settings as part of user admin settings
  */
 function login_one_time_form_user_admin_settings_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
-  // $form_email_template = \Drupal::formBuilder()->getForm('Drupal\login_one_time\Form\LoginOneTimeEmailTemplateForm');
-  //$form['email_login_one_time'] = $form_email_template['email_login_one_time'];
-  //$form['#submit'] = array_merge($form['#submit'], $form_email_template['#submit']);
+  $form_id = 'Drupal\login_one_time\Form\LoginOneTimeEmailTemplateForm';
+  $form_email_template = \Drupal::formBuilder()->getForm($form_id);
+  $form['email_login_one_time'] = $form_email_template['email_login_one_time'];
+  $form['actions']['submit']['#submit'][] = '\Drupal\login_one_time\Form\LoginOneTimeEmailTemplateForm::test';
   //kint($form_email_template);
-  //return \Drupal::service("renderer")->render($form);
-  $email_token_help = t('Available variables are: [site:name], [site:url], [user:display-name], [user:account-name], [user:mail], [site:login-url], [site:url-brief], [user:edit-url], [user:one-time-login-url], [user:cancel-url].');
-  $config           = \Drupal::config('login_one_time.settings');
 
-  $form['email_login_one_time']                           = array(
-    '#type' => 'details',
-    '#title' => t('Login one time e-mail'),
-    '#description' => t('Customize login one time e-mail messages sent to users.'),
-    // . ' ' . $email_token_help,
-    '#group' => 'email',
-  );
-  $form['email_login_one_time']['login_one_time_subject'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Subject'),
-    '#default_value' => $config->get('login_one_time_subject'),
-    '#maxlength' => 180,
-  );
-  $form['email_login_one_time']['login_one_time_body']    = array(
-    '#type' => 'textarea',
-    '#title' => t('Body'),
-    '#default_value' => $config->get('login_one_time_body'),
-    '#rows' => 12,
-  );
   return $form;
+
 }
