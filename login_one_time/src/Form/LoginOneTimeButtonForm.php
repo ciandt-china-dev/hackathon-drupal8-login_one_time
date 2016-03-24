@@ -50,7 +50,7 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $username = NULL, $path = NULL, $select = FALSE, $set_mail = FALSE) {
     $form = array();
     $form['#redirect'] = FALSE;
-    if ($username) {
+    /*if ($username) {
       $form['account'] = array(
         '#type' => 'value',
         '#value' => $username,
@@ -58,10 +58,10 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
       $account = user_load_by_name($username);
       $button_text = t('Send login one time link to @username', array('@username' => user_format_name($account)));
     }
-    else {
-      $form['account'] = LoginOneTimeOption::usersWidget();
+    else {*/
+      $form['account'] = LoginOneTimeOption::userWidget();
       $button_text = t('Send login one time link');
-    }
+    //}
     if ($select) {
       $form['path'] = LoginOneTimeOption::selectWidget($path);
     }
@@ -83,12 +83,12 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
       '#type' => 'submit',
       '#value' => $button_text,
     );
-
+    kint($form);
     //if (isset($form_state['storage']['done']) && $form_state['storage']['done']) {
     if ($form_state->getValue()['done']) {
       $form['submit']['#disabled'] = TRUE;
     }
-
+kint($select);
     return parent::buildForm($form, $form_state);
   }
 

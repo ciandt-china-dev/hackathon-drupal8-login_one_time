@@ -31,7 +31,37 @@ class LoginOneTimeOption {
     }
     return $form;
   }
-
+  
+  /**
+   * Generate the users widget options.
+   */
+  public static function userWidget($username = NULL, $title = NULL) {
+    $accounts = array();
+    $config = \Drupal::config('login_one_time.settings');
+    if ($config->get('login_one_time_user_widget', 'autocomplete') == 'autocomplete') {
+      $form = array(
+        '#type' => 'textfield',
+        '#default_value' => $username,
+        '#size' => 30,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#autocomplete_path' => 'login_one_time_autocomplete_users',
+      );
+    }
+    else {
+     $form = array(
+       '#type' => 'select',
+       '#default_value' => $username,
+       '#options' => array('' => t("- Choose a user -")) + self::userOptions(),
+       '#required' => TRUE,
+     );
+   }
+   if ($title) {
+     $form['#title'] = $title;
+   }
+  return $form;
+}
+  
   /**
    * Build the list of path select widget options.
    */
@@ -98,20 +128,20 @@ class LoginOneTimeOption {
     $permitted_role_ids = array_keys(user_roles(TRUE, 'use link to login one time'));
     if (!empty($permitted_role_ids)) {
       $args = array();
-      $args[':rids'] = $permitted_role_ids;
+      $args[':rids[]'] = $permitted_role_ids;
       $where = '';
       if ($autocomplete) {
         $where = " AND u.name LIKE :autocomplete";
         $args[':autocomplete'] = '%' . $autocomplete . '%';
       }
       $result = db_query(
-        'SELECT u.name AS name FROM {users} u'
-        . ' INNER JOIN {users_roles} ur ON u.uid = ur.uid AND ur.rid IN (:rids)'
+        'SELECT u.name AS name FROM {users_field_data} u'
+        . ' INNER JOIN {user__roles} ur ON u.uid = ur.entity_id AND ur.roles_target_id IN ( :rids[] )'
         . ' WHERE u.status <> 0'
         . $where
         . ' ORDER BY u.name',
         $args
-      );
+      )->fetchAll();
       foreach ($result as $row) {
         $options[$row->name] = SafeMarkup::checkPlain($row->name);
       }
