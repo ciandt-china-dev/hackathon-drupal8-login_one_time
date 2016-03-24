@@ -55,8 +55,7 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
         '#type' => 'value',
         '#value' => $username,
       );
-      // @Todo test user 'admin' here.
-      $account = user_load_by_name('admin');
+      $account = user_load_by_name($username);
       $button_text = t('Send login one time link to @username', array('@username' => user_format_name($account)));
     }
     else {
@@ -86,7 +85,7 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
     );
 
     //if (isset($form_state['storage']['done']) && $form_state['storage']['done']) {
-    if ($form_state->getStorage()['done']) {
+    if ($form_state->getValue()['done']) {
       $form['submit']['#disabled'] = TRUE;
     }
 
@@ -97,9 +96,9 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
    * Validate function for the form to send a one-time login link.
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    if (!empty($form_state['values']['set_mail'])) {
+    if (!empty($form_state->getValue('set_mail'))) {
       if (!\Drupal::service('email.validator')
-        ->isValid($form_state['values']['set_mail'])
+        ->isValid($form_state->getValue('set_mail'))
       ) {
         $form_state->setErrorByName('set_mail', t('Invalid email address.'));
       }
