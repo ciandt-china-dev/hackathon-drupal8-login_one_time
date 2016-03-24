@@ -33,6 +33,6 @@ login_one_time.settings:
     login_one_time_block_set_mail:
       type: boolean
     login_one_time_subject:
-      type: boolean
+      type: 'NULL'
     login_one_time_body:
-      type: boolean
+      type: 'NULL'

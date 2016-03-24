@@ -13,5 +13,5 @@ login_one_time_user_ignore_current_pass: false
 login_one_time_block_default: null
 login_one_time_block_select: false
 login_one_time_block_set_mail: false
-login_one_time_subject: false
-login_one_time_body: false
+login_one_time_subject: ''
+login_one_time_body: ''

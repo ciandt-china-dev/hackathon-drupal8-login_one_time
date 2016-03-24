@@ -520,35 +520,6 @@ function login_one_time_get_link($account, $path = NULL) {
 }
 
 /**
- * Create email settings as part of user admin settings
- */
-function login_one_time_form_user_admin_settings_alter(&$form, &$form_state) {
-  //$email_token_help = t('Available variables are:') . ' !username, !site, !password, !uri, !uri_brief, !mailto, !date, !login_uri, !edit_uri, !login_url.';
-  $email_token_help = t('Available variables are:') . ' [site:name], [site:url], [user:name], [user:mail], [site:login-url], [site:url-brief], [user:edit-url], <strong>[user:login-one-time]</strong>, [user:cancel-url].';
-
-  $form['email_login_one_time'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Login one time e-mail'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#description' => t('Customize login one time e-mail messages sent to users.') . ' ' . $email_token_help,
-    '#group' => 'email',
-  );
-  $form['email_login_one_time']['login_one_time_subject'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Subject'),
-    '#default_value' => login_one_time_mail_text('login_one_time_subject'),
-    '#maxlength' => 180,
-  );
-  $form['email_login_one_time']['login_one_time_body'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Body'),
-    '#default_value' => login_one_time_mail_text('login_one_time_body'),
-    '#rows' => 12,
-  );
-}
-
-/**
  * Retrieve the Global (or user) Language, seperated method to not polute the language variable in the parameter list.
  */
 function _login_one_time_getLanguage(){
@@ -1107,4 +1078,37 @@ function login_one_time_send_mail_action_submit($form, $form_state) {
  */
 function login_one_time_send_mail_action(&$account, $context = array()) {
   login_one_time_send_mail($account, $context['path']);
+}
+
+/**
+ * Create email settings as part of user admin settings
+ */
+function login_one_time_form_user_admin_settings_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  // $form_email_template = \Drupal::formBuilder()->getForm('Drupal\login_one_time\Form\LoginOneTimeEmailTemplateForm');
+  //$form['email_login_one_time'] = $form_email_template['email_login_one_time'];
+  //$form['#submit'] = array_merge($form['#submit'], $form_email_template['#submit']);
+  //kint($form_email_template);
+  //return \Drupal::service("renderer")->render($form);
+  $email_token_help = t('Available variables are: [site:name], [site:url], [user:display-name], [user:account-name], [user:mail], [site:login-url], [site:url-brief], [user:edit-url], [user:one-time-login-url], [user:cancel-url].');
+  $config = \Drupal::config('login_one_time.settings');
+  
+  $form['email_login_one_time'] = array(
+    '#type' => 'details',
+    '#title' => t('Login one time e-mail'),
+    '#description' => t('Customize login one time e-mail messages sent to users.'),// . ' ' . $email_token_help,
+    '#group' => 'email',
+  );
+  $form['email_login_one_time']['login_one_time_subject'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Subject'),
+    '#default_value' => $config->get('login_one_time_subject'),
+    '#maxlength' => 180,
+  );
+  $form['email_login_one_time']['login_one_time_body'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Body'),
+    '#default_value' => $config->get('login_one_time_body'),
+    '#rows' => 12,
+  );
+  return $form;
 }
