@@ -59,7 +59,7 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
       $button_text = t('Send login one time link to @username', array('@username' => user_format_name($account)));
     }
     else {*/
-      $form['account'] = LoginOneTimeOption::userWidget();
+      $form['account'] = LoginOneTimeOption::userWidget($username);
       $button_text = t('Send login one time link');
     //}
     if ($select) {
@@ -83,12 +83,11 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
       '#type' => 'submit',
       '#value' => $button_text,
     );
-    kint($form);
     //if (isset($form_state['storage']['done']) && $form_state['storage']['done']) {
-    if ($form_state->getValue()['done']) {
+    /*if ($form_state->getValue()['done']) {
       $form['submit']['#disabled'] = TRUE;
-    }
-kint($select);
+    }*/
+
     return parent::buildForm($form, $form_state);
   }
 
