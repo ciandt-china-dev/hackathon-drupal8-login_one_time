@@ -1,0 +1,17 @@
+login_one_time_expiry: ''
+login_one_time_user_widget: autocomplete
+login_one_time_path_front: true
+login_one_time_path_user: true
+login_one_time_path_user_edit: true
+login_one_time_path_current: true
+login_one_time_path_custom: ''
+login_one_time_path_default: null
+login_one_time_user_view: true
+login_one_time_user_select: false
+login_one_time_user_set_mail: false
+login_one_time_user_ignore_current_pass: false
+login_one_time_block_default: null
+login_one_time_block_select: false
+login_one_time_block_set_mail: false
+login_one_time_subject: false
+login_one_time_body: false
