@@ -20,3 +20,11 @@ login_one_time.autocomplete:
     _title: 'Login one time autocomplete users'
   requirements:
     _permission: 'access content'
+
+login_one_time.test:
+  path: 'test'
+  defaults:
+    _controller: '\Drupal\login_one_time\Controller\LoginOneTimeController::page'
+    _title: 'test'
+  requirements:
+    _permission: 'access content'
