@@ -893,68 +893,69 @@ function login_one_time_bulk_send_mail($accounts, $path = NULL) {
   return $return;
 }
 
+
 /**
  * Implements hook_block_info().
  */
-function login_one_time_block_info() {
-  $blocks[0] = array(
-    'info' => t('Login one time'),
-    'cache' => 'BLOCK_CACHE_PER_ROLE' | 'BLOCK_CACHE_PER_PAGE',
-  );
-  return $blocks;
-}
+//function login_one_time_block_info() {
+//  $blocks[0] = array(
+//    'info' => t('Login one time'),
+//    'cache' => 'BLOCK_CACHE_PER_ROLE' | 'BLOCK_CACHE_PER_PAGE',
+//  );
+//  return $blocks;
+//}
 
 /**
  * Implements hook_block_configure().
  */
-function login_one_time_block_configure($delta = '') {
-  if ($delta == 0) {
-    $form['default'] = login_one_time_select_widget(
-      \Drupal::config('login_one_time.settings')->get('login_one_time_block_default'),
-      t("Default path")
-    );
-    $form['default']['#required'] = FALSE;
-    $form['default']['#description'] = t("This is where the user will be directed to upon using a <em>login one time</em> link, or the default choice when using the <em>path selection</em> widget.");
-    $form['select'] = array(
-      '#type' => 'checkbox',
-      '#title' => t("Show <em>path selection</em> widget."),
-      '#default_value' => \Drupal::config('login_one_time.settings')->get('login_one_time_block_select'),
-    );
-    $form['set_mail'] = array(
-      '#type' => 'checkbox',
-      '#title' => t("Show <em>email override</em> widget."),
-      '#default_value' => \Drupal::config('login_one_time.settings')->get('login_one_time_block_set_mail'),
-    );
-    return $form;
-  }
-}
+//function login_one_time_block_configure($delta = '') {
+//  if ($delta == 0) {
+//    $form['default'] = login_one_time_select_widget(
+//      \Drupal::config('login_one_time.settings')->get('login_one_time_block_default'),
+//      t("Default path")
+//    );
+//    $form['default']['#required'] = FALSE;
+//    $form['default']['#description'] = t("This is where the user will be directed to upon using a <em>login one time</em> link, or the default choice when using the <em>path selection</em> widget.");
+//    $form['select'] = array(
+//      '#type' => 'checkbox',
+//      '#title' => t("Show <em>path selection</em> widget."),
+//      '#default_value' => \Drupal::config('login_one_time.settings')->get('login_one_time_block_select'),
+//    );
+//    $form['set_mail'] = array(
+//      '#type' => 'checkbox',
+//      '#title' => t("Show <em>email override</em> widget."),
+//      '#default_value' => \Drupal::config('login_one_time.settings')->get('login_one_time_block_set_mail'),
+//    );
+//    return $form;
+//  }
+//}
 
 /**
  * Implements hook_block_configure().
  */
-function login_one_time_block_save($delta = '', $edit = array()) {
-  if ($delta == 0) {
-    \Drupal::configFactory()->getEditable('login_one_time.settings')->set('login_one_time_block_default', $edit['default'])->save();
-    \Drupal::configFactory()->getEditable('login_one_time.settings')->set('login_one_time_block_select', $edit['select'])->save();
-    \Drupal::configFactory()->getEditable('login_one_time.settings')->set('login_one_time_block_set_mail', $edit['set_mail'])->save();
-  }
-}
+//function login_one_time_block_save($delta = '', $edit = array()) {
+//  if ($delta == 0) {
+//    \Drupal::configFactory()->getEditable('login_one_time.settings')->set('login_one_time_block_default', $edit['default'])->save();
+//    \Drupal::configFactory()->getEditable('login_one_time.settings')->set('login_one_time_block_select', $edit['select'])->save();
+//    \Drupal::configFactory()->getEditable('login_one_time.settings')->set('login_one_time_block_set_mail', $edit['set_mail'])->save();
+//  }
+//}
 
 /**
  * Implements hook_block_view().
  */
-function login_one_time_block_view($delta = '') {
-  if ($delta == 0) {
-    $path = \Drupal::config('login_one_time.settings')->get('login_one_time_block_default');
-    $select = \Drupal::config('login_one_time.settings')->get('login_one_time_block_select');
-    $set_mail = \Drupal::config('login_one_time.settings')->get('login_one_time_block_set_mail');
-    $block = array(
-      'subject' => t('Login one time'),
-      'content' => login_one_time_button(NULL, $path, $select, $set_mail),
-    );
-    return $block;
-  }
-}
+//function login_one_time_block_view($delta = '') {
+//  if ($delta == 0) {
+//    $path = \Drupal::config('login_one_time.settings')->get('login_one_time_block_default');
+//    $select = \Drupal::config('login_one_time.settings')->get('login_one_time_block_select');
+//    $set_mail = \Drupal::config('login_one_time.settings')->get('login_one_time_block_set_mail');
+//    $block = array(
+//      'subject' => t('Login one time'),
+//      'content' => login_one_time_button(NULL, $path, $select, $set_mail),
+//    );
+//    return $block;
+//  }
+//}
 
 /**
  * Implements hook_form_FORM_ID_alter().
