@@ -1,0 +1,22 @@
+login_one_time.page:
+  path: 'login_one_time/{first}/{second}/{three}'
+  defaults:
+    _controller: '\Drupal\login_one_time\Controller\LoginOneTimeController::page'
+    _title: 'Login one time'
+  requirements:
+    _permission: 'access content'
+login_one_time.admin:
+  path: 'admin/config/people/login_one_time'
+  defaults:
+    _form: '\Drupal\login_one_time\Form\LoginOneTimeAdminForm'
+    _title: 'Configure the settings for Login one time.'
+  requirements:
+    _permission: 'administer site configuration'
+
+login_one_time.autocomplete:
+  path: 'login_one_time_autocomplete_users'
+  defaults:
+    _form: '\Drupal\login_one_time\Form\LoginOneTimeAdminForm'
+    _title: 'Login one time autocomplete users'
+  requirements:
+    _permission: 'access content'
