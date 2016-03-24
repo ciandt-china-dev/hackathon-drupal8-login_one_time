@@ -29,48 +29,48 @@ function login_one_time_variable_info($options) {
 /**
  * Implements hook_perm().
  */
-function login_one_time_permission() {
-  return array(
-    'send link to login one time' => array(
-      'title' => t('Send a login one time link'),
-    ),
-    'use link to login one time' => array(
-      'title' => t('Use a login one time link'),
-    ),
-  );
-}
+//function login_one_time_permission() {
+//  return array(
+//    'send link to login one time' => array(
+//      'title' => t('Send a login one time link'),
+//    ),
+//    'use link to login one time' => array(
+//      'title' => t('Use a login one time link'),
+//    ),
+//  );
+//}
 
 /**
  * Implements hook_menu().
  */
-function login_one_time_menu() {
-  $items = array();
-
-  $items['login_one_time/%/%/%'] = array(
-    'title' => 'Login one time',
-    'page callback' => 'login_one_time_page',
-    'page arguments' => array(1, 2, 3),
-    'access callback' => TRUE,
-    'type' => MENU_CALLBACK,
-  );
-
-  $items['admin/config/people/login_one_time'] = array(
-    'access arguments' => array('administer site configuration'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('login_one_time_settings'),
-    'title' => 'Login one time',
-    'description' => 'Configure the settings for Login one time.',
-  );
-
-  $items['login_one_time_autocomplete_users'] = array(
-    'title' => 'Login one time autocomplete users',
-    'page callback' => 'login_one_time_autocomplete_users',
-    'access arguments' => array('access content'),
-    'type' => MENU_CALLBACK,
-  );
-
-  return $items;
-}
+//function login_one_time_menu() {
+//  $items = array();
+//
+//  $items['login_one_time/%/%/%'] = array(
+//    'title' => 'Login one time',
+//    'page callback' => 'login_one_time_page',
+//    'page arguments' => array(1, 2, 3),
+//    'access callback' => TRUE,
+//    'type' => MENU_CALLBACK,
+//  );
+//
+//  $items['admin/config/people/login_one_time'] = array(
+//    'access arguments' => array('administer site configuration'),
+//    'page callback' => 'drupal_get_form',
+//    'page arguments' => array('login_one_time_settings'),
+//    'title' => 'Login one time',
+//    'description' => 'Configure the settings for Login one time.',
+//  );
+//
+//  $items['login_one_time_autocomplete_users'] = array(
+//    'title' => 'Login one time autocomplete users',
+//    'page callback' => 'login_one_time_autocomplete_users',
+//    'access arguments' => array('access content'),
+//    'type' => MENU_CALLBACK,
+//  );
+//
+//  return $items;
+//}
 
 /**
  * Retrieve a pipe delimited string of autocomplete suggestions.
