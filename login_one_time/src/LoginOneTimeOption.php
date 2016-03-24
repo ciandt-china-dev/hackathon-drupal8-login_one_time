@@ -39,14 +39,19 @@ class LoginOneTimeOption {
     $accounts = array();
     $config = \Drupal::config('login_one_time.settings');
     if ($config->get('login_one_time_user_widget', 'autocomplete') == 'autocomplete') {
+      // Only return users with a permitted role id.
+      $permitted_role_ids = array_keys(user_roles(TRUE, 'use link to login one time'));
       $form = array(
-        '#type' => 'textfield',
-        '#default_value' => $username,
+        '#type' => 'entity_autocomplete',
+        '#target_type' => 'user',
+        //'#default_value' => $username,
+        '#selection_settings' => [
+          'filter' => ['role' => $permitted_role_ids],
+        ],
         '#size' => 30,
-        '#maxlength' => 128,
         '#required' => TRUE,
-        '#autocomplete_path' => 'login_one_time_autocomplete_users',
       );
+      //kint($form);
     }
     else {
      $form = array(
