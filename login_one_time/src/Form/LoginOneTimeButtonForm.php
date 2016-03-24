@@ -8,6 +8,7 @@ namespace Drupal\login_one_time\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\login_one_time\LoginOneTimeOption;
+use Drupal\login_one_time\LoginOneTimeSendMail;
 
 class LoginOneTimeButtonForm extends ConfigFormBase {
   /**
@@ -50,7 +51,7 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $username = NULL, $path = NULL, $select = FALSE, $set_mail = FALSE) {
     $form = array();
     $form['#redirect'] = FALSE;
-    /*if ($username) {
+    if ($username) {
       $form['account'] = array(
         '#type' => 'value',
         '#value' => $username,
@@ -58,10 +59,10 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
       $account = user_load_by_name($username);
       $button_text = t('Send login one time link to @username', array('@username' => user_format_name($account)));
     }
-    else {*/
+    else {
       $form['account'] = LoginOneTimeOption::userWidget($username);
       $button_text = t('Send login one time link');
-    //}
+    }
     if ($select) {
       $form['path'] = LoginOneTimeOption::selectWidget($path);
     }
@@ -108,13 +109,12 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
    * Submit function for the form to send a one-time login link.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $values = &$form_state['values'];
     $accounts = \Drupal::entityManager()
       ->getStorage('user')
-      ->loadByProperties(array('name' => $values['account']));
+      ->loadByProperties(array('name' => $form_state->getValue('account')));
     $account = reset($accounts);
-    $set_mail = !empty($values['set_mail']) ? $values['set_mail'] : NULL;
-    $result = login_one_time_send_mail($account, $values['path'], $set_mail);
+    $set_mail = !empty($values['set_mail']) ? $form_state->getValue('set_mail') : NULL;
+    $result = LoginOneTimeSendMail::sendMail($account, $form_state->getValue('path'), $set_mail);
     if ($result) {
       $form_state['storage']['done'] = TRUE;
       drupal_set_message(

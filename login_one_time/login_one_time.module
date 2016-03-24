@@ -6,7 +6,6 @@
  */
 use \Drupal\login_one_time\Controller;
 use \Drupal\Core\Url;
-use \Drupal\login_one_time\Form\LoginOneTimeEmailTemplateForm;
 
 /**
  * Implements hook_variable_info().
@@ -257,8 +256,8 @@ function login_one_time_button($username = NULL, $path = NULL, $select = FALSE, 
       // Woops, they've supplied an $account!
       $username = $username->name;
     }
-    $form = \Drupal::formBuilder()->getForm('\Drupal\login_one_time\Form\LoginOneTimeButtonForm', $username, $path, $select, $set_mail);
-
+    $form_id = 'Drupal\login_one_time\Form\LoginOneTimeButtonForm';
+    $form = \Drupal::formBuilder()->getForm($form_id, $username, $path, $select, $set_mail);
     return \Drupal::service("renderer")->render($form);
   }
   return NULL;
