@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class LoginOneTimeController extends ControllerBase {
 
-  public function page(Request $request, $uid, $timestamp, $hashed_pass) {
+  public function page($uid, $timestamp, $hashed_pass) {
 
     $user = \Drupal::currentUser();
     // Check if the user is already logged in. The back button is often the culprit here.

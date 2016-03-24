@@ -515,7 +515,7 @@ function login_one_time_get_link($account, $path = NULL) {
   $hash = user_pass_rehash($account, $timestamp);
   $url = Url::fromRoute(
     "login_one_time.page",
-    array('first' => $id, 'second' => $timestamp, 'third' => $hash),
+    array('uid' => $id, 'timestamp' => $timestamp, 'hashed_pass' => $hash),
     array(
     'query' => array('destination' => $path),
       'absolute' => TRUE,
