@@ -8,6 +8,7 @@ namespace Drupal\login_one_time\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\login_one_time\LoginOneTimeOption;
 
 class LoginOneTimeAdminForm extends ConfigFormBase {
   /**
@@ -106,7 +107,7 @@ class LoginOneTimeAdminForm extends ConfigFormBase {
       '#title' => t("Default path"),
       '#description' => t("This is where the user will be directed to upon using a <em>login one time</em> link, or the default choice when using the <em>path selection</em> widget."),
     );
-    $form['path']['default']['login_one_time_path_default'] = login_one_time_select_widget(
+    $form['path']['default']['login_one_time_path_default'] = LoginOneTimeOption::selectWidget(
       $config->get('login_one_time_path_default'),
       t("Default path")
     );
