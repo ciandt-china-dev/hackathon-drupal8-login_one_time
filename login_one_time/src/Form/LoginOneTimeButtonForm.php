@@ -114,8 +114,9 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
       ->loadByProperties(array('name' => $form_state->getValue('account')));
     $account = reset($accounts);
     $set_mail = !empty($values['set_mail']) ? $form_state->getValue('set_mail') : NULL;
-
-    $result = LoginOneTimeSendMail::sendMail($account, $form_state->getValue('path'), $set_mail);
+//kint($form_state);die();
+    $sendMailService =  new LoginOneTimeSendMail();
+    $result = $sendMailService->sendMail($account, $form_state->getValue('path'), $set_mail);
   return ;
     if ($result) {
       // $form_state['storage']['done'] = TRUE;

@@ -7,10 +7,10 @@ use \Symfony\Component\HttpFoundation\Request;
 use \Drupal\Core\Url;
 
 class LoginOneTimeSendMail {
-  static function sendMail(\Drupal\user\UserInterface $account, $path, $sendmail =null) {
+  public function sendMail(\Drupal\user\UserInterface $account, $path, $sendmail =null) {
     // test.
     //$account = user_load(1);
-    $result = LoginOneTimeSendMail::loginOneTimeSendMail($account, $path, $sendmail);
+    $result = self::loginOneTimeSendMail($account, $path, $sendmail);
 
     return array("#markup" => $result);
   }
@@ -19,7 +19,7 @@ class LoginOneTimeSendMail {
     $user = \Drupal::currentUser();
 
     if ($user->hasPermission('use link to login one time')) {
-      return LoginOneTimeSendMail::loginOneTimeMailNotify('login_one_time_key', $account, $path, $sendmail);
+      return self::loginOneTimeMailNotify('login_one_time_key', $account, $path, $sendmail);
 
     }
     else {
