@@ -51,7 +51,7 @@ class LoginOneTimeOption {
         '#size' => 30,
         '#required' => TRUE,
       );
-      kint($form);
+      //kint($form);
     }
     else {
      $form = array(
