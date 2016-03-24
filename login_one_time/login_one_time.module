@@ -495,6 +495,7 @@ function login_one_time_get_link($account, $path = NULL) {
   if (!$path) {
     $path = \Drupal::config('login_one_time.settings')->get('login_one_time_path_default');
   }
+
   // If there is STILL no path or the path is 'current', use the current path.
   if (!$path || $path == "login_one_time[current]") {
     // $path = drupal_get_path_alias($_GET['q']);
@@ -506,12 +507,24 @@ function login_one_time_get_link($account, $path = NULL) {
     $path = "";
   }
   elseif ($path == "login_one_time[user_edit]") {
-    $path = "user/" . $account->uid . "/edit";
+    $path = "user/" . $account->get('uid')->value . "/edit";
   }
 
   $timestamp = REQUEST_TIME;
-  return Url::fromUri(
-    "login_one_time/" . $account->uid . "/" . $timestamp . "/" .
+  $id =  $account->get('uid')->value;
+  $hash = user_pass_rehash($account, $timestamp);
+  $url = Url::fromRoute(
+    "login_one_time.page",
+    array('first' => $id, 'second' => $timestamp, 'third' => $hash),
+    array(
+    'query' => array('destination' => $path),
+      'absolute' => TRUE,
+      'language' =>  \Drupal::languageManager()->getCurrentLanguage(), //user_preferred_language($account),
+    )
+  )->toString();
+/*  var_dump($url);die();
+  $url = Url::fromUri(
+    "login_one_time/" . $account->get('uid')->value . "/" . $timestamp . "/" .
     user_pass_rehash($account, $timestamp), //check
     array(
       'query' => array('destination' => $path),
@@ -519,7 +532,8 @@ function login_one_time_get_link($account, $path = NULL) {
       'language' => \Drupal::languageManager()->getCurrentLanguage()->getName(), //user_preferred_language($account),
     )
   );
-
+  var_dump($url);die();*/
+  return $url;
 }
 
 /**
@@ -542,6 +556,7 @@ function login_one_time_mail_text($key, $path = NULL, $language = NULL, $variabl
     $lan_name = \Drupal::languageManager()->getCurrentLanguage()->getName();
   }
   $config = \Drupal::config('login_one_time.settings');
+
   if (\Drupal::moduleHandler()->moduleExists("i18n_variable")) {
     // $admin_setting = i18n_variable_get($key, $language, FALSE);
   }
@@ -594,21 +609,37 @@ function login_one_time_mail($key, &$message, $params) {
     $message['subject'] .= $subject;
     $message['body'][] = $body;*/
   if ($key == 'login_one_time_key') {
-    $language  = $message['language'];
+    $language  = isset($message['language'])? $message['language'] : '';
+    if (!$language) {
+      $language = \Drupal::languageManager()->getCurrentLanguage();
+    }
+    $language_id = $language->getId();
     $path      = &$params['path'];
-     $variables = login_one_time_mail_tokens($params['account'], $language, $path);
+
+     $variables = login_one_time_mail_tokens($params['account'], $language_id, $path);
     //$login_con = new LoginOneTimeController();
+//ok up
+
 
     $subject = login_one_time_mail_text($key . '_subject', $path, $language, $variables);
+
     $body    = login_one_time_mail_text($key . '_body', $path, $language, $variables);
 
+  //test
+    $subject = "subject test";
+    $body = "body test username:!username,loginurl:!login_url";
+   //fix to token;
     $subject = \Drupal::token()
       ->replace($subject, array('user' => $params['account']));
-    $body    = \Drupal::token()
-      ->replace($body, array('user' => $params['account'], 'path' => $path));
+   // $body    = \Drupal::token()->replace($body, array('!username' => $variables['!username'], '!login_url' => $variables['!login_url']));
+   $body = str_replace(array('!username','!login_url'),array($variables['!username'], $variables['!login_url']), $body);
 
     $message['subject'] .= $subject;
-    $message['body'][] = $body;
+    //$message['body'][] = $body;
+    $body = Drupal\Core\Mail\MailFormatHelper::htmlToText($body);
+
+    $message['body'][] = Drupal\Core\Mail\MailFormatHelper::htmlToText($body);
+
   }
 }
 
@@ -625,22 +656,24 @@ function login_one_time_mail($key, &$message, $params) {
  *
  * @todo: To be deprecated.
  */
-function login_one_time_mail_tokens($account, $language, $path = NULL) {
+function login_one_time_mail_tokens(\Drupal\user\UserInterface $account, $language, $path = NULL) {
   global $base_url;
+  $config = \Drupal::config('system.site');
   // @FIXME
   // url() expects a route name or an external URI.
+  //var_dump($account->getAccountName());die();
   $tokens = array(
-    '!username' => $account->name,
-    '!site' => variable_get('site_name', 'Drupal'),
-    '!login_url' => login_one_time_get_link($account, $path), //
+    '!username' => $account->getAccountName(),
+    '!site' => $config->get('name') ? $config->get('name') : 'drupal',
+    '!login_url' => login_one_time_get_link($account, $path),
     //'!login_url' => LoginOneTimeController::loginOneTimeGetLink($account, $path),
     '!uri' => $base_url,
     '!uri_brief' => preg_replace('!^https?://!', '', $base_url),
-    '!mailto' => $account->mail,
-    '!date' => \Drupal\Core\Datetime\DateFormatter::format(REQUEST_TIME, 'medium', '', NULL, $language->language),   ///format_date(REQUEST_TIME, 'medium', '', NULL, $language->language),
-    '!login_uri' => \Drupal\Core\Url::fromRoute('user.page'),
+    '!mailto' => $account->getEmail(),
+    '!date' => format_date(REQUEST_TIME), // \Drupal\Core\Datetime\DateFormatter::format(REQUEST_TIME, 'medium', '', NULL),   ///format_date(REQUEST_TIME, 'medium', '', NULL, $language->language),
+    '!login_uri' => \Drupal\Core\Url::fromRoute('user.page')->toString(),
     //'!edit_uri' => url('user/' . $account->uid . '/edit', array('absolute' => TRUE, 'language' => $language)),
-    '!edit_uri' => Url::fromUri('user/' . $account->uid . '/edit', array('absolute' => TRUE, 'language' => $language)),
+    //'!edit_uri' => Url::fromUri('user/' . $account->uid . '/edit', array('absolute' => TRUE, 'language' => $language)), //fix
   );
 
   if (!empty($account->password)) {
