@@ -116,7 +116,7 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
     $set_mail = !empty($values['set_mail']) ? $form_state->getValue('set_mail') : NULL;
     $result = LoginOneTimeSendMail::sendMail($account, $form_state->getValue('path'), $set_mail);
     if ($result) {
-      $form_state['storage']['done'] = TRUE;
+      // $form_state['storage']['done'] = TRUE;
       drupal_set_message(
         t(
           "A one-time login link has been sent to @username.",
