@@ -257,7 +257,8 @@ function login_one_time_button($username = NULL, $path = NULL, $select = FALSE, 
       // Woops, they've supplied an $account!
       $username = $username->name;
     }
-    $form = \Drupal::formBuilder()->getForm('login_one_time_button_form', $username, $path, $select, $set_mail);
+    $form = \Drupal::formBuilder()->getForm('\Drupal\login_one_time\Form\LoginOneTimeButtonForm', $username, $path, $select, $set_mail);
+
     return \Drupal::service("renderer")->render($form);
   }
   return NULL;
@@ -685,97 +686,97 @@ function login_one_time_mail_tokens(\Drupal\user\UserInterface $account, $langua
 /**
  * Menu callback; process login one time link and redirect.
  */
-function login_one_time_page($uid, $timestamp, $hashed_pass) {
-  $user = \Drupal::currentUser();
-
-  // Check if the user is already logged in. The back button is often the culprit here.
-  if ($user->uid) {
-    drupal_set_message(t('It is not necessary to use this link to login anymore. You are already logged in.'));
-
-    $action = login_one_time_get_action_path();
-
-    if (!empty($action)) {
-      drupal_goto($action);
-    }
-    else {
-      drupal_goto("<front>");
-    }
-  }
-  else {
-    // Time out, in seconds, until login URL expires. 24 hours = 86400 seconds.
-    $timeout = \Drupal::config('login_one_time.settings')->get('login_one_time_expiry');
-    if (!$timeout) {
-      $timeout = 86400 * 14;
-    }
-    $current = REQUEST_TIME ;
-    // Some redundant checks for extra security ?
-    $account = \Drupal::entityManager()->getStorage('user')->load($uid);
-    if ($timestamp < $current && isset($account) && $account->status == 1) {
-      // Deny one-time login to blocked accounts.
-      if (drupal_is_denied(\Drupal::request()->getClientIp())) {
-        drupal_set_message(t('You have tried to use a one-time login for an account which has been blocked.'), 'error');
-        drupal_goto("<front>");
-      }
-
-      // Deny one-time login to accounts without permission
-      if (!$account->hasPermission('use link to login one time')) {
-        drupal_set_message(t('You have tried to use a one-time login for an account which is no longer permitted to use one-time login links.'), 'error');
-        drupal_goto("<front>");
-      }
-
-      // No time out for first time login.
-      if ($timeout && $account->login && $current - $timestamp > $timeout) {
-        drupal_set_message(t('You have tried to use a one-time login link that has expired. Please use the log in form to supply your username and password.'));
-        drupal_goto('user/login');
-      }
-      elseif ($account->uid && $timestamp > $account->login && $timestamp < $current && $hashed_pass == user_pass_rehash($account->pass, $timestamp, $account->login, $account->uid)) {
-
-        $action = login_one_time_get_action_path();
-
-        \Drupal::logger('user')->notice('User %name used one-time login link at time %timestamp.', array('%name' => $account->name, '%timestamp' => $timestamp));
-        // Set the new user.
-        $user = $account;
-        // user_authenticate_finalize() also updates the login timestamp of the
-        // user, which invalidates further use of the one-time login link.
-        user_login_finalize();
-
-        // Integrate with the rules module, see login_one_time.rules.inc.
-        if (\Drupal::moduleHandler()->moduleExists('rules')) {
-          rules_invoke_event('login_one_time_used', $user);
-        }
-
-        \Drupal::moduleHandler()->invokeAll('login_one_time_used', [$user]);
-
-	// Add a session variable indicating whether the ignore current password field setting is enabled.
-	$_SESSION['ignore_current_pass'] = \Drupal::config('login_one_time.settings')->get('login_one_time_user_ignore_current_pass');
-        drupal_set_message(t('You have just used your one-time login link.'));
-        if (!empty($action)) {
-          drupal_goto($action);
-        }
-        else {
-          drupal_goto("<front>");
-        }
-
-      }
-      else {
-        drupal_set_message(t('You have tried to use a one-time login link which has been used. Please use the log in form to supply your username and password.'));
-        drupal_goto('user/login');
-      }
-    }
-    else {
-      // Deny access, no more clues.
-      // Everything will be in the watchdog's URL for the administrator to check.
-      drupal_access_denied();
-    }
-  }
-}
+//function login_one_time_page($uid, $timestamp, $hashed_pass) {
+//  $user = \Drupal::currentUser();
+//
+//  // Check if the user is already logged in. The back button is often the culprit here.
+//  if ($user->uid) {
+//    drupal_set_message(t('It is not necessary to use this link to login anymore. You are already logged in.'));
+//
+//    $action = login_one_time_get_action_path();
+//
+//    if (!empty($action)) {
+//      drupal_goto($action);
+//    }
+//    else {
+//      drupal_goto("<front>");
+//    }
+//  }
+//  else {
+//    // Time out, in seconds, until login URL expires. 24 hours = 86400 seconds.
+//    $timeout = \Drupal::config('login_one_time.settings')->get('login_one_time_expiry');
+//    if (!$timeout) {
+//      $timeout = 86400 * 14;
+//    }
+//    $current = REQUEST_TIME ;
+//    // Some redundant checks for extra security ?
+//    $account = \Drupal::entityManager()->getStorage('user')->load($uid);
+//    if ($timestamp < $current && isset($account) && $account->status == 1) {
+//      // Deny one-time login to blocked accounts.
+//      if (drupal_is_denied(\Drupal::request()->getClientIp())) {
+//        drupal_set_message(t('You have tried to use a one-time login for an account which has been blocked.'), 'error');
+//        drupal_goto("<front>");
+//      }
+//
+//      // Deny one-time login to accounts without permission
+//      if (!$account->hasPermission('use link to login one time')) {
+//        drupal_set_message(t('You have tried to use a one-time login for an account which is no longer permitted to use one-time login links.'), 'error');
+//        drupal_goto("<front>");
+//      }
+//
+//      // No time out for first time login.
+//      if ($timeout && $account->login && $current - $timestamp > $timeout) {
+//        drupal_set_message(t('You have tried to use a one-time login link that has expired. Please use the log in form to supply your username and password.'));
+//        drupal_goto('user/login');
+//      }
+//      elseif ($account->uid && $timestamp > $account->login && $timestamp < $current && $hashed_pass == user_pass_rehash($account->pass, $timestamp, $account->login, $account->uid)) {
+//
+//        $action = login_one_time_get_action_path();
+//
+//        \Drupal::logger('user')->notice('User %name used one-time login link at time %timestamp.', array('%name' => $account->name, '%timestamp' => $timestamp));
+//        // Set the new user.
+//        $user = $account;
+//        // user_authenticate_finalize() also updates the login timestamp of the
+//        // user, which invalidates further use of the one-time login link.
+//        user_login_finalize();
+//
+//        // Integrate with the rules module, see login_one_time.rules.inc.
+//        if (\Drupal::moduleHandler()->moduleExists('rules')) {
+//          rules_invoke_event('login_one_time_used', $user);
+//        }
+//
+//        \Drupal::moduleHandler()->invokeAll('login_one_time_used', [$user]);
+//
+//	// Add a session variable indicating whether the ignore current password field setting is enabled.
+//	$_SESSION['ignore_current_pass'] = \Drupal::config('login_one_time.settings')->get('login_one_time_user_ignore_current_pass');
+//        drupal_set_message(t('You have just used your one-time login link.'));
+//        if (!empty($action)) {
+//          drupal_goto($action);
+//        }
+//        else {
+//          drupal_goto("<front>");
+//        }
+//
+//      }
+//      else {
+//        drupal_set_message(t('You have tried to use a one-time login link which has been used. Please use the log in form to supply your username and password.'));
+//        drupal_goto('user/login');
+//      }
+//    }
+//    else {
+//      // Deny access, no more clues.
+//      // Everything will be in the watchdog's URL for the administrator to check.
+//      drupal_access_denied();
+//    }
+//  }
+//}
 
 /**
  * Get the action path for redirect.
  */
-function login_one_time_get_action_path() {
-  return urlencode($_REQUEST['destination']);
-}
+//function login_one_time_get_action_path() {
+//  return urlencode($_REQUEST['destination']);
+//}
 
 /**
  * Conditionally create and send a notification email when a certain

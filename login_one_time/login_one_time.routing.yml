@@ -1,5 +1,5 @@
 login_one_time.page:
-  path: 'login_one_time/{first}/{second}/{third}'
+  path: 'login_one_time/{uid}/{timestamp}/{hashed_pass}'
   defaults:
     _controller: '\Drupal\login_one_time\Controller\LoginOneTimeController::page'
     _title: 'Login one time'
