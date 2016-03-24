@@ -26,8 +26,9 @@ class LoginOneTimeController extends ControllerBase {
 
       $action = $this->get_action_path();
 
+
       if (!empty($action)) {
-        return $this->redirect($action);
+        return new RedirectResponse($action);
       }
       else {
         return $this->redirect("<front>");
@@ -85,7 +86,7 @@ class LoginOneTimeController extends ControllerBase {
           $_SESSION['ignore_current_pass'] = \Drupal::config('login_one_time.settings')->get('login_one_time_user_ignore_current_pass');
           drupal_set_message(t('You have just used your one-time login link.'));
           if (!empty($action)) {
-            return $this->redirect($action);
+            return new RedirectResponse($action);
           }
           else {
             return $this->redirect("<front>");
