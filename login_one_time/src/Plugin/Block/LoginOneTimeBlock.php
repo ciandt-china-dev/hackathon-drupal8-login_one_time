@@ -9,6 +9,8 @@ namespace Drupal\login_one_time\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\login_one_time\LoginOneTimeOption;
+use Drupal\login_one_time\Form\LoginOneTimeButtonForm;
 
 /**
  * Provides a 'LoginOneTimeBlock' block.
@@ -19,12 +21,13 @@ use Drupal\Core\Form\FormStateInterface;
  * )
  */
 class LoginOneTimeBlock extends BlockBase {
+
   /**
    * {@inheritdoc}
    */
   public function blockForm($form, FormStateInterface $form_state) {
     $config = \Drupal::configFactory()->getEditable('login_one_time.settings');
-    $form['default'] = login_one_time_select_widget(
+    $form['default'] = LoginOneTimeOption::selectWidget(
       $config->get('login_one_time_block_default'),
       t("Default path")
     );
@@ -40,6 +43,7 @@ class LoginOneTimeBlock extends BlockBase {
       '#title' => t("Show <em>email override</em> widget."),
       '#default_value' => $config->get('login_one_time_block_set_mail'),
     );
+
     return $form;
   }
 
@@ -51,7 +55,8 @@ class LoginOneTimeBlock extends BlockBase {
     $config = \Drupal::configFactory()->getEditable('login_one_time.settings');
     $config->set('login_one_time_block_default', $form_state->getValue('default'))
       ->set('login_one_time_block_select', $form_state->getValue('select'))
-      ->set('login_one_time_block_set_mail', $form_state->getValue('set_mail'))->save();
+      ->set('login_one_time_block_set_mail', $form_state->getValue('set_mail'))
+      ->save();
   }
 
   /**
@@ -62,10 +67,13 @@ class LoginOneTimeBlock extends BlockBase {
     $path = $config->get('login_one_time_block_default');
     $select = $config->get('login_one_time_block_select');
     $set_mail = $config->get('login_one_time_block_set_mail');
-    $block = array(
-      'subject' => t('Login one time'),
-      'content' => login_one_time_button(NULL, $path, $select, $set_mail),
+
+    $form = \Drupal::formBuilder()
+      ->getForm('\Drupal\login_one_time\Form\LoginOneTimeButtonForm', $path, $select, $set_mail);
+    $content = \Drupal::service("renderer")->render($form);
+
+    return array(
+      '#markup' => $content
     );
-    return $block;
   }
 }
