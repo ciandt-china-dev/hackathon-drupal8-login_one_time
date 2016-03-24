@@ -12,5 +12,3 @@
 function login_one_time_install() {
   login_one_time_force_permissions();
 }
-
-
