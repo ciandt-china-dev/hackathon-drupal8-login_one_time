@@ -7,6 +7,7 @@ namespace Drupal\login_one_time\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\login_one_time\LoginOneTimeOption;
 
 class LoginOneTimeButtonForm extends ConfigFormBase {
   /**
@@ -54,15 +55,16 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
         '#type' => 'value',
         '#value' => $username,
       );
-      $account = user_load_by_name($username);
+      // @Todo test user 'admin' here.
+      $account = user_load_by_name('admin');
       $button_text = t('Send login one time link to @username', array('@username' => user_format_name($account)));
     }
     else {
-      $form['account'] = $this->login_one_time_users_widget();
+      $form['account'] = LoginOneTimeOption::usersWidget();
       $button_text = t('Send login one time link');
     }
     if ($select) {
-      $form['path'] = $this->login_one_time_select_widget($path);
+      $form['path'] = LoginOneTimeOption::selectWidget($path);
     }
     else {
       $form['path'] = array(
@@ -83,7 +85,8 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
       '#value' => $button_text,
     );
 
-    if (isset($form_state['storage']['done']) && $form_state['storage']['done']) {
+    //if (isset($form_state['storage']['done']) && $form_state['storage']['done']) {
+    if ($form_state->getStorage()['done']) {
       $form['submit']['#disabled'] = TRUE;
     }
 
@@ -129,58 +132,6 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
         'error'
       );
     }
-  }
-
-  /**
-   * Generate the select widget options.
-   */
-  private function login_one_time_select_widget($path = NULL, $title = NULL) {
-    // Set a default path if $path not given.
-    if (is_null($path)) {
-      $path = \Drupal::config('login_one_time.settings')->get('login_one_time_path_default');
-      if (is_null($path)) {
-        $path = 'login_one_time[current]';
-      }
-    }
-    $form = array(
-      '#type' => 'select',
-      '#default_value' => $path,
-      '#options' => array('' => t("- Choose a page -")) + $this->login_one_time_path_options($path),
-      '#required' => TRUE,
-    );
-    if ($title) {
-      $form['#title'] = $title;
-    }
-    return $form;
-  }
-
-  /**
-   * Generate the users widget options.
-   */
-  function login_one_time_users_widget($username = NULL, $title = NULL) {
-    $accounts = array();
-    if (\Drupal::config('login_one_time.settings')->get('login_one_time_user_widget') == 'autocomplete') {
-      $form = array(
-        '#type' => 'textfield',
-        '#default_value' => $username,
-        '#size' => 30,
-        '#maxlength' => 128,
-        '#required' => TRUE,
-        '#autocomplete_path' => 'login_one_time_autocomplete_users',
-      );
-    }
-    else {
-      $form = array(
-        '#type' => 'select',
-        '#default_value' => $username,
-        '#options' => array('' => t("- Choose a user -")) + $this->login_one_time_user_options(),
-        '#required' => TRUE,
-      );
-    }
-    if ($title) {
-      $form['#title'] = $title;
-    }
-    return $form;
   }
 
 }

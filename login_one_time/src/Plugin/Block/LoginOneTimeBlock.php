@@ -10,7 +10,6 @@ namespace Drupal\login_one_time\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\login_one_time\LoginOneTimeOption;
-use Drupal\login_one_time\Form\LoginOneTimeButtonForm;
 
 /**
  * Provides a 'LoginOneTimeBlock' block.
