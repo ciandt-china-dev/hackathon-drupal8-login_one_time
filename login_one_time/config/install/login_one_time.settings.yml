@@ -13,5 +13,19 @@ login_one_time_user_ignore_current_pass: false
 login_one_time_block_default: null
 login_one_time_block_select: false
 login_one_time_block_set_mail: false
-login_one_time_subject: ''
-login_one_time_body: ''
+login_one_time_subject: 'One-time login link for [user:name] at [site:name]'
+login_one_time_body: >
+  [user:name],
+
+  A site administrator at [site:name] has created an account for you. You may now log in by clicking this link or copying and pasting it to your browser:
+
+  [user:one-time-login-url]
+
+  This link can only be used once to log in and will lead you to a page where you can set your password.
+
+  After setting your password, you will be able to log in at [site:login-url] in the future using:
+
+  username: [user:name]
+  password: Your password
+
+  --  [site:name] team
