@@ -38,7 +38,6 @@ class LoginOneTimeSendMail {
     $params['path'] = $path;
     $email = $email ? $email : $account->getEmail();
     $language = $language ? $language : \Drupal::languageManager()->getCurrentLanguage(); //check
-    // $mail = drupal_mail('login_one_time', $op, $email, $language, $params);
     $message = \Drupal::service('plugin.manager.mail')->mail('login_one_time', $op, $email, $language, $params, true);
 
     if ($message['send']) {
