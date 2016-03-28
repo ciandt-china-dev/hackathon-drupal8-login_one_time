@@ -6,6 +6,7 @@
  */
 use \Drupal\login_one_time\Controller;
 use \Drupal\Core\Url;
+use \Drupal\login_one_time\LoginOneTimeSendMail;
 
 /**
  * Implements hook_variable_info().
@@ -455,6 +456,7 @@ function login_one_time_button($username = NULL, $path = NULL, $select = FALSE, 
 //}
 
 /**
+ * will move
  * Send the login one time link to a user via email.
  *
  * @param $account
@@ -469,7 +471,7 @@ function login_one_time_button($username = NULL, $path = NULL, $select = FALSE, 
  *   The return value from drupal_mail_send(), if ends up being called.
  *
  */
-function login_one_time_send_mail($account, $path = NULL, $email = NULL) {
+/*function login_one_time_send_mail($account, $path = NULL, $email = NULL) {
   if ($account->hasPermission('use link to login one time')) {
     return login_one_time_mail_notify('login_one_time', $account, $path, $email);
   }
@@ -482,12 +484,13 @@ function login_one_time_send_mail($account, $path = NULL, $email = NULL) {
       'warning'
     );
   }
-}
+}*/
 
 /**
+ * will remove
  * Generate a one-time link for the $account
  */
-function login_one_time_get_link($account, $path = NULL) {
+/*function login_one_time_get_link($account, $path = NULL) {
 
   // Path juggle - watch closely now....
 
@@ -522,19 +525,8 @@ function login_one_time_get_link($account, $path = NULL) {
       'language' =>  \Drupal::languageManager()->getCurrentLanguage(), //user_preferred_language($account),
     )
   )->toString();
-/*  var_dump($url);die();
-  $url = Url::fromUri(
-    "login_one_time/" . $account->get('uid')->value . "/" . $timestamp . "/" .
-    user_pass_rehash($account, $timestamp), //check
-    array(
-      'query' => array('destination' => $path),
-      'absolute' => TRUE,
-      'language' => \Drupal::languageManager()->getCurrentLanguage()->getName(), //user_preferred_language($account),
-    )
-  );
-  var_dump($url);die();*/
   return $url;
-}
+}*/
 
 /**
  * Retrieve the Global (or user) Language, seperated method to not polute the language variable in the parameter list.
@@ -550,7 +542,7 @@ function _login_one_time_getLanguage(){
  *
  * Used by user_mail() and the settings forms to retrieve strings.
  */
-function login_one_time_mail_text($key, $path = NULL, $language = NULL, $variables = array()) {
+/*function login_one_time_mail_text($key, $path = NULL, $language = NULL, $variables = array()) {
 
   if (empty($language)) {
     $lan_name = \Drupal::languageManager()->getCurrentLanguage()->getName();
@@ -588,7 +580,7 @@ function login_one_time_mail_text($key, $path = NULL, $language = NULL, $variabl
         return t("[user:name],\n\nA request to give you a one-time login for your account has been made at [site:name].\n\nYou may now log in to [site:url-brief] by clicking on this link or copying and pasting it in your browser:\n\n[user:login-one-time]\n\nThis is a one-time login, so it can be used only once.  It expires in two weeks and nothing will happen if it's not used.\n\n--  [site:name] team", $variables, $options);
     }
   }
-}
+}*/
 
 /**
  * Implements hook_mail().
@@ -615,17 +607,13 @@ function login_one_time_mail($key, &$message, $params) {
     }
     $language_id = $language->getId();
     $path      = &$params['path'];
+    $loginSendService =  new LoginOneTimeSendMail();
+    $variables = $loginSendService->loginOneTimeMailTokens($params['account'], $language_id, $path);
 
-     $variables = login_one_time_mail_tokens($params['account'], $language_id, $path);
-    //$login_con = new LoginOneTimeController();
-//ok up
+    $subject = $loginSendService->loginOneTimeMailText($key . '_subject', $path, $language, $variables);
+    $body = $loginSendService->loginOneTimeMailText($key . '_body', $path, $language, $variables);
 
-
-    $subject = login_one_time_mail_text($key . '_subject', $path, $language, $variables);
-
-    $body    = login_one_time_mail_text($key . '_body', $path, $language, $variables);
-
-  //test
+    //test
     $subject = "subject test";
     $body = "body test username:!username,loginurl:!login_url";
    //fix to token;
@@ -635,7 +623,6 @@ function login_one_time_mail($key, &$message, $params) {
    $body = str_replace(array('!username','!login_url'),array($variables['!username'], $variables['!login_url']), $body);
 
     $message['subject'] .= $subject;
-    //$message['body'][] = $body;
     $body = Drupal\Core\Mail\MailFormatHelper::htmlToText($body);
 
     $message['body'][] = Drupal\Core\Mail\MailFormatHelper::htmlToText($body);
