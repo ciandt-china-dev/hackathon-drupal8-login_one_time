@@ -22,15 +22,22 @@ class LoginOneTimeSendMail {
    * @return array
    */
   public function sendMail(\Drupal\user\UserInterface $account, $path, $sendmail = NULL) {
-    // test.
-    //$account = user_load(1);
     $result = self::loginOneTimeSendMail($account, $path, $sendmail);
     return array("#markup" => $result);
   }
 
+  /**
+   * @param \Drupal\user\UserInterface $account
+   *   Account.
+   * @param $path
+   *   Destination path.
+   * @param $sendmail
+   *   Send mail.
+   *
+   * @return bool|null|string
+   */
   public function loginOneTimeSendMail(\Drupal\user\UserInterface $account, $path, $sendmail) {
     $user = \Drupal::currentUser();
-
     if ($user->hasPermission('use link to login one time')) {
       return self::loginOneTimeMailNotify('login_one_time_key', $account, $path, $sendmail);
 
@@ -40,13 +47,28 @@ class LoginOneTimeSendMail {
     }
   }
 
+  /**
+   * @param $op
+   *   This is the key.
+   * @param \Drupal\user\UserInterface $account
+   *   Account.
+   * @param $path
+   *   Destination path.
+   * @param null $email
+   *   Send to mail.
+   * @param null $language
+   *   Language object.
+   *
+   * @return bool|null|string
+   */
   public function loginOneTimeMailNotify($op, \Drupal\user\UserInterface $account, $path, $email = NULL, $language = NULL) {
     $params['account'] = $account;
-   // user_preferred_langcode
+    $language = $account->language();
     $params['path']    = $path;
     $email             = $email ? $email : $account->getEmail();
     $language          = $language ? $language : \Drupal::languageManager()
-      ->getCurrentLanguage(); //check
+      ->getCurrentLanguage();
+    $params['language'] = $language;
     $message           = \Drupal::service('plugin.manager.mail')
       ->mail('login_one_time', $op, $email, $language, $params, TRUE);
 
@@ -78,14 +100,14 @@ class LoginOneTimeSendMail {
       '!username' => $account->getAccountName(),
       '!site' => $config->get('name') ? $config->get('name') : 'drupal',
       '!login_url' => self::loginOneTimeGetLink($account, $path),
-      //'!login_url' => LoginOneTimeController::loginOneTimeGetLink($account, $path),
       '!uri' => $base_url,
       '!uri_brief' => preg_replace('!^https?://!', '', $base_url),
       '!mailto' => $account->getEmail(),
-      '!date' => format_date(REQUEST_TIME), // \Drupal\Core\Datetime\DateFormatter::format(REQUEST_TIME, 'medium', '', NULL),   ///format_date(REQUEST_TIME, 'medium', '', NULL, $language->language),
-      '!login_uri' => \Drupal\Core\Url::fromRoute('user.page')->toString(),
-      //'!edit_uri' => url('user/' . $account->uid . '/edit', array('absolute' => TRUE, 'language' => $language)),
-      //'!edit_uri' => Url::fromUri('user/' . $account->uid . '/edit', array('absolute' => TRUE, 'language' => $language)), //fix
+      '!date' => format_date(REQUEST_TIME),
+      // \Drupal\Core\Datetime\DateFormatter::format(REQUEST_TIME, 'medium', '', NULL),   ///format_date(REQUEST_TIME, 'medium', '', NULL, $language->language),
+      // '!login_uri' => $base_url . \Drupal\Core\Url::fromRoute('user.page')->toString(),
+      '!login_uri' => Url::fromUserInput('/user', array('absolute' => TRUE, 'language' => $language))->toString(),
+      '!edit_uri' => Url::fromUserInput('/user/' . $account->get('uid')->value . '/edit', array('absolute' => TRUE, 'language' => $language))->toString(), //fix
     );
 
     if (!empty($account->password)) {
@@ -100,31 +122,19 @@ class LoginOneTimeSendMail {
    * Used by user_mail() and the settings forms to retrieve strings.
    */
   public function loginOneTimeMailText($key, $path = NULL, $language = NULL, $variables = array()) {
-
     if (empty($language)) {
-      $lan_name = \Drupal::languageManager()->getCurrentLanguage()->getName();
+      $lan_id = \Drupal::languageManager()->getCurrentLanguage()->getId();
     }
-    $config = \Drupal::config('login_one_time.settings');
+    $config = \Drupal::config('user.mail');
 
-/*    if (\Drupal::moduleHandler()->moduleExists("i18n_variable")) {
-      // $admin_setting = i18n_variable_get($key, $language, FALSE);
-    }
-    else {
-      // @FIXME
-// // @FIXME
-// // The correct configuration object could not be determined. You'll need to
-// // rewrite this call manually.
-// $admin_setting = variable_get($key, FALSE);
-      // $config = \Drupal::config('login_one_time.settings');
-
-    }*/
-
+  //var_dump($config->get($key),$config->get('register_pending_approval.subject'));die();
     if ($var = $config->get($key)) {
+      //var_dump($var);die();
       // An admin setting overrides the default string.
       return strtr($var);
     }
     else {
-      $langcode = isset($lan_name) ? $lan_name : NULL;
+      $langcode = isset($lan_id) ? $lan_id : NULL;
       $options = array();
       if (!is_null($langcode)) {
         $options['langcode'] = $langcode;
@@ -142,7 +152,7 @@ class LoginOneTimeSendMail {
   /**
    * Generate a one-time link for the $account
    */
-  public function loginOneTimeGetLink($account, $path = NULL) {
+  public function loginOneTimeGetLink(\Drupal\user\UserInterface $account, $path = NULL) {
 
     // Path juggle - watch closely now....
 
@@ -153,7 +163,6 @@ class LoginOneTimeSendMail {
 
     // If there is STILL no path or the path is 'current', use the current path.
     if (!$path || $path == "login_one_time[current]") {
-      // $path = drupal_get_path_alias($_GET['q']);
       $url = Url::fromRoute('<current>');
       $path = $url->getInternalPath();
     }
@@ -174,21 +183,10 @@ class LoginOneTimeSendMail {
       array(
         'query' => array('destination' => $path),
         'absolute' => TRUE,
-        'language' =>  \Drupal::languageManager()->getCurrentLanguage(), //user_preferred_language($account),
+        'language' => $account->language(),
+        //\Drupal::languageManager()->getCurrentLanguage(),.
       )
     )->toString();
-    /*  var_dump($url);die();
-      $url = Url::fromUri(
-        "login_one_time/" . $account->get('uid')->value . "/" . $timestamp . "/" .
-        user_pass_rehash($account, $timestamp), //check
-        array(
-          'query' => array('destination' => $path),
-          'absolute' => TRUE,
-          'language' => \Drupal::languageManager()->getCurrentLanguage()->getName(), //user_preferred_language($account),
-        )
-      );
-      var_dump($url);die();*/
     return $url;
   }
-
 }
