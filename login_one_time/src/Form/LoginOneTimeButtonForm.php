@@ -89,7 +89,14 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
       $form['submit']['#disabled'] = TRUE;
     }*/
 
-    return parent::buildForm($form, $form_state);
+    $form['actions']['#type'] = 'actions';
+    $form['actions']['submit'] = array(
+      '#type' => 'submit',
+      '#value' => $this->t('Send login one time link'),
+      '#button_type' => 'primary',
+    );
+
+    return $form;
   }
 
   /**
