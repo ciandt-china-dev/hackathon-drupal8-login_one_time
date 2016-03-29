@@ -1,4 +1,5 @@
 <?php
+
 /**
 
  * @file
@@ -280,20 +281,20 @@ function login_one_time_send_mail_action(&$account, $context = array()) {
 }
 
 /**
- * Create email settings as part of user admin settings
+ * Implements hook_form_FORM_ID_alter() for "login one time" email template 
+ * configurations.
+ *
+ * This function adds two elements which are email subject and body to user 
+ * account setting form.
  */
-function login_one_time_form_user_admin_settings_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
-  //$form_id = 'Drupal\login_one_time\Form\LoginOneTimeEmailTemplateForm';
-  //$form_email_template = \Drupal::formBuilder()->getForm($form_id);
-  //$form['email_login_one_time'] = $form_email_template['email_login_one_time'];
-  //$form['actions']['submit']['#submit'][] = '\Drupal\login_one_time\Form\LoginOneTimeEmailTemplateForm::test';
-  //kint($form_email_template);
-
+function login_one_time_form_user_admin_settings_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $email_token_help = $this->t('Available variables are: [site:name], [site:url], [user:display-name], [user:account-name], [user:mail], [site:login-url], [site:url-brief], [user:edit-url], [user:one-time-login-url], [user:cancel-url].');
   $mail_config = \Drupal::config('user.mail');
   $form['login_one_time'] = array(
     '#type' => 'details',
     '#title' => t('Login one time e-mail'),
     '#group' => 'email',
+    '#description' => t('Customize login one time e-mail messages sent to users.') . ' ' . $email_token_help,
     '#weight' => 99,
   );
   $form['login_one_time']['login_one_time_subject'] = array(
@@ -314,7 +315,7 @@ function login_one_time_form_user_admin_settings_alter(&$form, \Drupal\Core\Form
 }
 
 /**
- * Save login one time config value.
+ * Save user email temaplate configuration values.
  *
  * @param $form
  *   Form.
@@ -322,8 +323,8 @@ function login_one_time_form_user_admin_settings_alter(&$form, \Drupal\Core\Form
  *   Form state.
  */
 function login_one_time_config_save(&$form, FormStateInterface $form_state) {
-  $site_settings = \Drupal::configFactory()->getEditable('user.mail');
-  $site_settings->set('login_one_time.subject', $form_state->getValue('login_one_time_subject'));
-  $site_settings->set('login_one_time.body', $form_state->getValue('login_one_time_body'));
-  $site_settings->save();
+  $mail_config = \Drupal::configFactory()->getEditable('user.mail');
+  $mail_config->set('login_one_time.subject', $form_state->getValue('login_one_time_subject'));
+  $mail_config->set('login_one_time.body', $form_state->getValue('login_one_time_body'));
+  $mail_config->save();
 }
