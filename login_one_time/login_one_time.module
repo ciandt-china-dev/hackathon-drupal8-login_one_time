@@ -35,21 +35,20 @@ function login_one_time_variable_info($options) {
  * Implements hook_user_view().
  */
 function login_one_time_user_view(array &$build, \Drupal\user\UserInterface $account, $view_mode, $langcode) {
+  $config = \Drupal::config('login_one_time.settings');
   if (
     $account->hasPermission('use link to login one time') &&
-    \Drupal::currentUser()->hasPermission('send link to login one time') &&
-    \Drupal::config('login_one_time.settings')->get('user_view')
+    $account->hasPermission('send link to login one time') &&
+    $config->get('user_view')
   ) {
-    $select = \Drupal::config('login_one_time.settings')->get('user_select');
-    $set_mail = \Drupal::config('login_one_time.settings')->get('user_set_mail');
     $account->content['login_one_time'] = array(
       '#title' => t('Login one time'),
       '#type' => 'item',
       '#markup' => login_one_time_button(
         $account->getUsername(),
         NULL,
-        $select,
-        $set_mail
+        $config->get('user_select'),
+        $config->get('user_set_mail')
       ),
     );
   }
