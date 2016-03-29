@@ -124,7 +124,7 @@ class LoginOneTimeSendMail {
     if (empty($language)) {
       $lan_id = \Drupal::languageManager()->getCurrentLanguage()->getId();
     }
-    $config = \Drupal::config('user.mail');
+    $config = \Drupal::config('login_one_time.settings');
 
     if ($var = $config->get($key)) {
       // An admin setting overrides the default string.
@@ -138,9 +138,9 @@ class LoginOneTimeSendMail {
       }
       // No override, return default string.
       switch ($key) {
-        case 'login_one_time.subject':
+        case 'email_template.subject':
           return t('One-time login link for [user:name] at [site:name]', $variables, $options);
-        case 'login_one_time.body':
+        case 'email_template.body':
           return t("[user:name],\n\nA request to give you a one-time login for your account has been made at [site:name].\n\nYou may now log in to [site:url-brief] by clicking on this link or copying and pasting it in your browser:\n\n[user:login-one-time]\n\nThis is a one-time login, so it can be used only once.  It expires in two weeks and nothing will happen if it's not used.\n\n--  [site:name] team", $variables, $options);
       }
     }
@@ -155,7 +155,7 @@ class LoginOneTimeSendMail {
 
     // If there is no path get the default path.
     if (!$path) {
-      $path = \Drupal::config('login_one_time.settings')->get('login_one_time_path_default');
+      $path = \Drupal::config('login_one_time.settings')->get('path_default');
     }
 
     // If there is STILL no path or the path is 'current', use the current path.

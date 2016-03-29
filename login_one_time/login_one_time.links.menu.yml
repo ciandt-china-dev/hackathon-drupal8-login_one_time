@@ -1,4 +1,5 @@
 login_one_time.admin_form:
   title: 'Login one time'
+  description: 'Configure the settings for Login one time.'
   parent: user.admin_index
   route_name: login_one_time.admin

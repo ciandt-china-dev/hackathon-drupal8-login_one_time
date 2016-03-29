@@ -2,37 +2,35 @@ login_one_time.settings:
   type: mapping
   label: Settings
   mapping:
-    login_one_time_expiry:
+    expiry:
       type: integer
-    login_one_time_user_widget:
+    user_widget:
       type: string
-    login_one_time_path_front:
+    path_front:
       type: boolean
-    login_one_time_path_user:
+    path_user:
       type: boolean
-    login_one_time_path_user_edit:
+    path_user_edit:
       type: boolean
-    login_one_time_path_current:
+    path_current:
       type: boolean
-    login_one_time_path_custom:
+    path_custom:
       type: string
-    login_one_time_path_default:
+    path_default:
       type: 'NULL'
-    login_one_time_user_view:
+    user_view:
       type: boolean
-    login_one_time_user_select:
+    user_select:
       type: boolean
-    login_one_time_user_set_mail:
+    user_set_mail:
       type: boolean
-    login_one_time_user_ignore_current_pass:
+    user_ignore_current_pass:
       type: boolean
-    login_one_time_block_default:
+    block_default:
       type: 'NULL'
-    login_one_time_block_select:
+    block_select:
       type: boolean
-    login_one_time_block_set_mail:
+    block_set_mail:
       type: boolean
-    login_one_time_subject:
-      type: string
-    login_one_time_body:
-      type: string
+    email_template:
+      type: mail

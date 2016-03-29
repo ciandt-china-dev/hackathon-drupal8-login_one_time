@@ -36,7 +36,7 @@ class LoginOneTimeController extends ControllerBase {
     }
     else {
       // Time out, in seconds, until login URL expires. 24 hours = 86400 seconds.
-      $timeout = \Drupal::config('login_one_time.settings')->get('login_one_time_expiry');
+      $timeout = \Drupal::config('login_one_time.settings')->get('expiry');
       if (!$timeout) {
         $timeout = 86400 * 14;
       }
@@ -83,7 +83,7 @@ class LoginOneTimeController extends ControllerBase {
           \Drupal::moduleHandler()->invokeAll('login_one_time_used', [$user]);
 
           // Add a session variable indicating whether the ignore current password field setting is enabled.
-          $_SESSION['ignore_current_pass'] = \Drupal::config('login_one_time.settings')->get('login_one_time_user_ignore_current_pass');
+          $_SESSION['ignore_current_pass'] = \Drupal::config('login_one_time.settings')->get('ignore_current_pass');
           drupal_set_message(t('You have just used your one-time login link.'));
           if (!empty($action)) {
             return new RedirectResponse($action);

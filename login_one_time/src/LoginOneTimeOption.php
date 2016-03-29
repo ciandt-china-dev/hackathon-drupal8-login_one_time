@@ -15,7 +15,7 @@ class LoginOneTimeOption {
   public static function selectWidget($path = NULL, $title = NULL) {
     // Set a default path if $path not given.
     if (is_null($path)) {
-      $path = \Drupal::config('login_one_time.settings')->get('login_one_time_path_default');
+      $path = \Drupal::config('login_one_time.settings')->get('path_default');
       if (is_null($path)) {
         $path = 'login_one_time[current]';
       }
@@ -38,7 +38,7 @@ class LoginOneTimeOption {
   public static function userWidget($username = NULL, $title = NULL) {
     $accounts = array();
     $config = \Drupal::config('login_one_time.settings');
-    if ($config->get('login_one_time_user_widget') == 'autocomplete') {
+    if ($config->get('user_widget') == 'autocomplete') {
       // Only return users with a permitted role id.
       $permitted_role_ids = array_keys(user_roles(TRUE, 'use link to login one time'));
       $form = array(
@@ -74,25 +74,25 @@ class LoginOneTimeOption {
     $options = array();
     $config = \Drupal::config('login_one_time.settings');
     // Get variables and assemble the array.
-    if ($config->get('login_one_time_path_front')
+    if ($config->get('path_front')
     ) {
       $options['login_one_time[front]'] = t("Front page");
     }
-    if ($config->get('login_one_time_path_user')
+    if ($config->get('path_user')
     ) {
       $options['user'] = t("User page");
     }
-    if ($config->get('login_one_time_path_user_edit')
+    if ($config->get('path_user_edit')
     ) {
       $options['login_one_time[user_edit]'] = t("User edit page");
     }
-    if ($config->get('login_one_time_path_current')
+    if ($config->get('path_current')
     ) {
       $options['login_one_time[current]'] = t("Current page");
     }
-    if ($config->get('login_one_time_path_custom')
+    if ($config->get('path_custom')
     ) {
-      $customs = explode("\n", $config->get('login_one_time_path_custom'));
+      $customs = explode("\n", $config->get('path_custom'));
       if (is_array($customs)) {
         foreach ($customs as $custom) {
           $custom_option = explode("|", $custom);

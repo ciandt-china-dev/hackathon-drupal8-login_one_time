@@ -1,38 +1,25 @@
-login_one_time_expiry: 1209600
-login_one_time_user_widget: autocomplete
-login_one_time_path_front: true
-login_one_time_path_user: true
-login_one_time_path_user_edit: true
-login_one_time_path_current: true
-login_one_time_path_custom: ''
-login_one_time_path_default: null
-login_one_time_user_view: true
-login_one_time_user_select: false
-login_one_time_user_set_mail: false
-login_one_time_user_ignore_current_pass: false
-login_one_time_block_default: null
-login_one_time_block_select: false
-login_one_time_block_set_mail: false
-login_one_time_subject: 'One-time login link for [user:name] at [site:name]'
-login_one_time_body: >+
-  [user:name],
-
-
-  A site administrator at [site:name] has created an account for you. You may now log in by clicking this link or copying and pasting it to your browser:
-
-
-  [user:one-time-login-url]
-
-
-  This link can only be used once to log in and will lead you to a page where you can set your password.
-
-
-  After setting your password, you will be able to log in at [site:login-url] in the future using:
-
-
-  username: [user:name]
-
-  password: Your password
-  
-
-  --  [site:name] team
+expiry: 1209600
+user_widget: autocomplete
+path_front: true
+path_user: true
+path_user_edit: true
+path_current: true
+path_custom: ''
+path_default: null
+user_view: true
+user_select: false
+user_set_mail: false
+user_ignore_current_pass: false
+block_default: null
+block_select: false
+block_set_mail: false
+email_template:
+  subject: 'One-time login link for [user:name] at [site:name]'
+  body: "[user:name],
+  \n\nA site administrator at [site:name] has created an account for you. You may now log in by clicking this link or copying and pasting it to your browser:
+  \n\n[user:one-time-login-url]
+  \n\nThis link can only be used once to log in and will lead you to a page where you can set your password.
+  \n\nAfter setting your password, you will be able to log in at [site:login-url] in the future using:
+  \n\nusername: [user:name]
+  \n\npassword: Your password
+  \n\n--  [site:name] team"
