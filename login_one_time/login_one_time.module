@@ -141,11 +141,13 @@ function login_one_time_user_operations() {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function login_one_time_form_user_profile_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+function login_one_time_form_user_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   // Remove the current password field from user profile edit form
   // and disable validation.
   if (\Drupal::config('login_one_time.settings')->get('login_one_time_user_ignore_current_pass') && isset($_SESSION['ignore_current_pass']) && $_SESSION['ignore_current_pass']) {
     // Check for the current password validation hook, and disable it.
+
+    // todo: Do not validate current password.
     $key = array_search('user_validate_current_pass', $form['#validate']);
 
     if ($key !== FALSE) {
@@ -153,7 +155,7 @@ function login_one_time_form_user_profile_form_alter(&$form, \Drupal\Core\Form\F
     }
 
     // Disable the current password form.
-    $form['account']['current_pass_required_value']['#access'] = FALSE;
+    //$form['account']['current_pass_required_value']['#access'] = FALSE;
     $form['account']['current_pass']['#access'] = FALSE;
   }
 }
