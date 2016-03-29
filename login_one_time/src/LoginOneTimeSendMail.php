@@ -122,16 +122,15 @@ class LoginOneTimeSendMail {
    * Used by user_mail() and the settings forms to retrieve strings.
    */
   public function loginOneTimeMailText($key, $path = NULL, $language = NULL, $variables = array()) {
+
     if (empty($language)) {
       $lan_id = \Drupal::languageManager()->getCurrentLanguage()->getId();
     }
     $config = \Drupal::config('user.mail');
 
-  //var_dump($config->get($key),$config->get('register_pending_approval.subject'));die();
     if ($var = $config->get($key)) {
-      //var_dump($var);die();
       // An admin setting overrides the default string.
-      return strtr($var);
+      return $var;
     }
     else {
       $langcode = isset($lan_id) ? $lan_id : NULL;
@@ -141,9 +140,9 @@ class LoginOneTimeSendMail {
       }
       // No override, return default string.
       switch ($key) {
-        case 'login_one_time_subject':
+        case 'login_one_time.subject':
           return t('One-time login link for [user:name] at [site:name]', $variables, $options);
-        case 'login_one_time_body':
+        case 'login_one_time.body':
           return t("[user:name],\n\nA request to give you a one-time login for your account has been made at [site:name].\n\nYou may now log in to [site:url-brief] by clicking on this link or copying and pasting it in your browser:\n\n[user:login-one-time]\n\nThis is a one-time login, so it can be used only once.  It expires in two weeks and nothing will happen if it's not used.\n\n--  [site:name] team", $variables, $options);
       }
     }
