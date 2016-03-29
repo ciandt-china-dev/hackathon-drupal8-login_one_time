@@ -27,7 +27,7 @@ class LoginOneTimeBlock extends BlockBase {
   public function blockForm($form, FormStateInterface $form_state) {
     $config = \Drupal::configFactory()->getEditable('login_one_time.settings');
     $form['default'] = LoginOneTimeOption::selectWidget(
-      $config->get('login_one_time_block_default'),
+      $config->get('block_default'),
       t("Default path")
     );
     $form['default']['#required'] = FALSE;
@@ -35,12 +35,12 @@ class LoginOneTimeBlock extends BlockBase {
     $form['select'] = array(
       '#type' => 'checkbox',
       '#title' => t("Show <em>path selection</em> widget."),
-      '#default_value' => $config->get('login_one_time_block_select'),
+      '#default_value' => $config->get('block_select'),
     );
     $form['set_mail'] = array(
       '#type' => 'checkbox',
       '#title' => t("Show <em>email override</em> widget."),
-      '#default_value' => $config->get('login_one_time_block_set_mail'),
+      '#default_value' => $config->get('block_set_mail'),
     );
 
     return $form;
@@ -52,9 +52,9 @@ class LoginOneTimeBlock extends BlockBase {
    */
   public function blockSubmit($form, FormStateInterface $form_state) {
     $config = \Drupal::configFactory()->getEditable('login_one_time.settings');
-    $config->set('login_one_time_block_default', $form_state->getValue('default'))
-      ->set('login_one_time_block_select', $form_state->getValue('select'))
-      ->set('login_one_time_block_set_mail', $form_state->getValue('set_mail'))
+    $config->set('block_default', $form_state->getValue('default'))
+      ->set('block_select', $form_state->getValue('select'))
+      ->set('block_set_mail', $form_state->getValue('set_mail'))
       ->save();
   }
 
@@ -62,10 +62,10 @@ class LoginOneTimeBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    $config = \Drupal::configFactory()->getEditable('login_one_time.settings');
-    $path = $config->get('login_one_time_block_default');
-    $select = $config->get('login_one_time_block_select');
-    $set_mail = $config->get('login_one_time_block_set_mail');
+    $config = \Drupal::config('login_one_time.settings');
+    $path = $config->get('block_default');
+    $select = $config->get('block_select');
+    $set_mail = $config->get('set_mail');
 
     $form = \Drupal::formBuilder()
       ->getForm('\Drupal\login_one_time\Form\LoginOneTimeButtonForm', null, $path, $select, $set_mail);
