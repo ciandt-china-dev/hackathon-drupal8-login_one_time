@@ -104,8 +104,6 @@ class LoginOneTimeSendMail {
       '!uri_brief' => preg_replace('!^https?://!', '', $base_url),
       '!mailto' => $account->getEmail(),
       '!date' => format_date(REQUEST_TIME),
-      // \Drupal\Core\Datetime\DateFormatter::format(REQUEST_TIME, 'medium', '', NULL),   ///format_date(REQUEST_TIME, 'medium', '', NULL, $language->language),
-      // '!login_uri' => $base_url . \Drupal\Core\Url::fromRoute('user.page')->toString(),
       '!login_uri' => Url::fromUserInput('/user', array('absolute' => TRUE, 'language' => $language))->toString(),
       '!edit_uri' => Url::fromUserInput('/user/' . $account->get('uid')->value . '/edit', array('absolute' => TRUE, 'language' => $language))->toString(), //fix
     );
@@ -183,7 +181,6 @@ class LoginOneTimeSendMail {
         'query' => array('destination' => $path),
         'absolute' => TRUE,
         'language' => $account->language(),
-        //\Drupal::languageManager()->getCurrentLanguage(),.
       )
     )->toString();
     return $url;
