@@ -110,8 +110,8 @@ function login_one_time_mail($key, &$message, $params) {
     $loginSendService =  new LoginOneTimeSendMail();
     $variables = $loginSendService->loginOneTimeMailTokens($account, $language, $path);
 
-    $subject = $loginSendService->loginOneTimeMailText('login_one_time.subject', $path, $language, $variables);
-    $body = $loginSendService->loginOneTimeMailText('login_one_time.body', $path, $language, $variables);
+    $subject = $loginSendService->loginOneTimeMailText('login_one_time_subject', $path, $language, $variables);
+    $body = $loginSendService->loginOneTimeMailText('login_one_time_body', $path, $language, $variables);
 
     $subject = \Drupal::token()->replace($subject, array('user' => $account));
     $body = \Drupal::token()->replace($body, array('user' => $account));
@@ -288,8 +288,9 @@ function login_one_time_send_mail_action(&$account, $context = array()) {
  * account setting form.
  */
 function login_one_time_form_user_admin_settings_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $email_token_help = $this->t('Available variables are: [site:name], [site:url], [user:display-name], [user:account-name], [user:mail], [site:login-url], [site:url-brief], [user:edit-url], [user:one-time-login-url], [user:cancel-url].');
-  $mail_config = \Drupal::config('user.mail');
+  $email_token_help = t('Available variables are: [site:name], [site:url], [user:display-name], [user:account-name], [user:mail], [site:login-url], [site:url-brief], [user:edit-url], [user:one-time-login-url], [user:cancel-url].');
+
+  $mail_config = \Drupal::config('login_one_time.settings');
   $form['login_one_time'] = array(
     '#type' => 'details',
     '#title' => t('Login one time e-mail'),
@@ -300,13 +301,13 @@ function login_one_time_form_user_admin_settings_alter(&$form, FormStateInterfac
   $form['login_one_time']['login_one_time_subject'] = array(
     '#type' => 'textfield',
     '#title' => t('Login one time Subject'),
-    '#default_value' => $mail_config->get('login_one_time.subject'),
+    '#default_value' => $mail_config->get('login_one_time_subject'),
     '#maxlength' => 180,
   );
   $form['login_one_time']['login_one_time_body'] = array(
     '#type' => 'textarea',
     '#title' => t('Login one time Body'),
-    '#default_value' => $mail_config->get('login_one_time.body'),
+    '#default_value' => $mail_config->get('login_one_time_body'),
     '#rows' => 12,
   );
   $form['actions']['submit']['#submit'][] = 'login_one_time_config_save';
@@ -323,8 +324,8 @@ function login_one_time_form_user_admin_settings_alter(&$form, FormStateInterfac
  *   Form state.
  */
 function login_one_time_config_save(&$form, FormStateInterface $form_state) {
-  $mail_config = \Drupal::configFactory()->getEditable('user.mail');
-  $mail_config->set('login_one_time.subject', $form_state->getValue('login_one_time_subject'));
-  $mail_config->set('login_one_time.body', $form_state->getValue('login_one_time_body'));
+  $mail_config = \Drupal::configFactory()->getEditable('login_one_time.settings');
+  $mail_config->set('login_one_time_subject', $form_state->getValue('login_one_time_subject'));
+  $mail_config->set('login_one_time_body', $form_state->getValue('login_one_time_body'));
   $mail_config->save();
 }
