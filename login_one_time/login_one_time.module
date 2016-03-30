@@ -9,49 +9,35 @@ use Drupal\login_one_time\Controller;
 use Drupal\Core\Url;
 use Drupal\login_one_time\LoginOneTimeSendMail;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 
 /**
- * Implements hook_variable_info().
+ * Implements hook_user_view_alter().
  */
-function login_one_time_variable_info($options) {
-  $variable['login_one_time_subject'] = array (
-    'title' => t('One-time Login mail Subject', array(), $options),
-    'description' => t('The Subject of the one-time login mail', array(), $options),
-    'default' => t("One-time login link for [user:name] at [site:name]", array(), $options),
-    'type' => 'string',
-    'localize' => TRUE,
-  );
-  $variable['login_one_time_body'] = array (
-    'title' => t('One-time Login mail Body', array(), $options),
-    'description' => t('The Body of the one-time login mail', array(), $options),
-    'default' => t("[user:name],\n\nA request to give you a one-time login for your account has been made at [site:name].\n\nYou may now log in to [site:url-brief] by clicking on this link or copying and pasting it in your browser:\n\n[user:login-one-time]\n\nThis is a one-time login, so it can be used only once.  It expires in two weeks and nothing will happen if it's not used.\n\n--  [site:name] team", array(), $options),
-    'type' => 'string',
-    'localize' => TRUE,
-  );
-  return $variable;
-}
-
-/**
- * Implements hook_user_view().
- */
-function login_one_time_user_view(array &$build, \Drupal\user\UserInterface $account, $view_mode, $langcode) {
+function login_one_time_user_view_alter(&$build, \Drupal\user\UserInterface $account, EntityViewDisplayInterface $display) {
   $config = \Drupal::config('login_one_time.settings');
+  $current_url = Url::fromRoute('<current>');
+  $uri = $current_url->getInternalPath();
+  // It will improve below.
   if (
     $account->hasPermission('use link to login one time') &&
     $account->hasPermission('send link to login one time') &&
-    $config->get('user_view')
+    $config->get('user_view') &&
+    preg_match('/user\/\d+/i',$uri)
   ) {
-    $account->content['login_one_time'] = array(
-      '#title' => t('Login one time'),
+    $select                  = \Drupal::config('login_one_time.settings')
+      ->get('login_one_time_user_select');
+    $set_mail                = \Drupal::config('login_one_time.settings')
+      ->get('login_one_time_user_set_mail');
+    $item                    = login_one_time_button($account->getUsername(), NULL, $select, $set_mail);
+    $build['login_one_itme'] = array(
       '#type' => 'item',
-      '#markup' => login_one_time_button(
-        $account->getUsername(),
-        NULL,
-        $config->get('user_select'),
-        $config->get('user_set_mail')
-      ),
+      '#markup' => $item,
+      '#weight' => 10,
     );
   }
+  // Add a #post_render callback to act on the rendered HTML of the user.
+  // $build['#post_render'][] = 'my_module_user_post_render';.
 }
 
 /**
@@ -81,18 +67,11 @@ function login_one_time_button($username = NULL, $path = NULL, $select = FALSE, 
       // Woops, they've supplied an $account!
       $username = $username->name;
     }
-    $form_id = 'Drupal\login_one_time\Form\LoginOneTimeButtonForm';
+    $form_id = 'Drupal\login_one_time\Form\LoginOneTimeButtonFormUser';
     $form = \Drupal::formBuilder()->getForm($form_id, $username, $path, $select, $set_mail);
     return \Drupal::service("renderer")->render($form);
   }
   return NULL;
-}
-
-/**
- * Retrieve the Global (or user) Language, seperated method to not polute the language variable in the parameter list.
- */
-function _login_one_time_getLanguage(){
-  return \Drupal::languageManager()->getCurrentLanguage()->getName();
 }
 
 /**

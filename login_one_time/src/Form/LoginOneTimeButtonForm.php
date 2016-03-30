@@ -5,12 +5,12 @@
 
 namespace Drupal\login_one_time\Form;
 
-use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\login_one_time\LoginOneTimeOption;
 use Drupal\login_one_time\LoginOneTimeSendMail;
 
-class LoginOneTimeButtonForm extends ConfigFormBase {
+class LoginOneTimeButtonForm extends FormBase {
   /**
    * {@inheritdoc}
    */
@@ -57,12 +57,14 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
         '#value' => $username,
       );
       $account = user_load_by_name($username);
-      $button_text = t('Send login one time link to @username', array('@username' => user_format_name($account)));
+
+      $button_text = t('Send login one time link to @username', array('@username' => $account->getAccountName()));
     }
     else {
       $form['account'] = LoginOneTimeOption::userWidget($username);
       $button_text = t('Send login one time link');
     }
+
     if ($select) {
       $form['path'] = LoginOneTimeOption::selectWidget($path);
     }
@@ -83,16 +85,6 @@ class LoginOneTimeButtonForm extends ConfigFormBase {
     $form['actions']['submit'] = array(
       '#type' => 'submit',
       '#value' => $button_text,
-    );
-    //if (isset($form_state['storage']['done']) && $form_state['storage']['done']) {
-    /*if ($form_state->getValue()['done']) {
-      $form['submit']['#disabled'] = TRUE;
-    }*/
-
-    $form['actions']['#type'] = 'actions';
-    $form['actions']['submit'] = array(
-      '#type' => 'submit',
-      '#value' => $this->t('Send login one time link'),
       '#button_type' => 'primary',
     );
 

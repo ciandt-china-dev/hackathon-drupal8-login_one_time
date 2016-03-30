@@ -65,7 +65,7 @@ class LoginOneTimeBlock extends BlockBase {
     $config = \Drupal::config('login_one_time.settings');
     $path = $config->get('block_default');
     $select = $config->get('block_select');
-    $set_mail = $config->get('set_mail');
+    $set_mail = $config->get('block_set_mail');
 
     $form = \Drupal::formBuilder()
       ->getForm('\Drupal\login_one_time\Form\LoginOneTimeButtonForm', null, $path, $select, $set_mail);
