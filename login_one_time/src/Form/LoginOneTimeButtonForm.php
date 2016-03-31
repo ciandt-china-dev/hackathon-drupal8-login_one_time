@@ -9,6 +9,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\login_one_time\LoginOneTimeOption;
 use Drupal\login_one_time\LoginOneTimeSendMail;
+use Drupal\user\Entity\User;
 
 class LoginOneTimeButtonForm extends FormBase {
   /**
@@ -108,10 +109,8 @@ class LoginOneTimeButtonForm extends FormBase {
    * Submit function for the form to send a one-time login link.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $accounts = \Drupal::entityManager()
-      ->getStorage('user')
-      ->loadByProperties(array('name' => $form_state->getValue('account')));
-    $account = reset($accounts);
+    $uid = $form_state->getValue('account');
+    $account = User::load($uid);
     $set_mail = !empty($form_state->getValue('set_mail')) ? $form_state->getValue('set_mail') : NULL;
 
     $sendMailService =  new LoginOneTimeSendMail();
