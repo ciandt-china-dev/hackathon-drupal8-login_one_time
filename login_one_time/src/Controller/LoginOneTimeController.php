@@ -1,6 +1,6 @@
 <?php
 /**
- * @file \Drupal\login_one_time\Controller\LoginOneTimeController
+ * @file \Drupal\login_one_time\Controller\LoginOneTimeController.
  */
 
 namespace Drupal\login_one_time\Controller;
@@ -8,24 +8,25 @@ namespace Drupal\login_one_time\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\user\Entity\User;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Drupal\Core\Url;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Drupal\login_one_time\LoginOneTimeOption;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
+/**
+ *
+ */
 class LoginOneTimeController extends ControllerBase {
 
+  /**
+   *
+   */
   public function page($uid, $timestamp, $hashed_pass) {
 
     $user = \Drupal::currentUser();
     // Check if the user is already logged in. The back button is often the culprit here.
-
     if ($user->isAuthenticated()) {
       drupal_set_message(t('It is not necessary to use this link to login anymore. You are already logged in.'));
 
       $action = $this->get_action_path();
-
 
       if (!empty($action)) {
         return new RedirectResponse($action);
@@ -40,19 +41,18 @@ class LoginOneTimeController extends ControllerBase {
       if (!$timeout) {
         $timeout = 86400 * 14;
       }
-      $current = REQUEST_TIME ;
+      $current = REQUEST_TIME;
       // Some redundant checks for extra security ?
       $account = User::load($uid);
 
-
-      if ($account && $timestamp < $current && isset($account) && $account->isActive() == true) {
+      if ($account && $timestamp < $current && isset($account) && $account->isActive() == TRUE) {
         // Deny one-time login to blocked accounts.
         if (\Drupal::moduleHandler()->moduleExists('ban') && \Drupal::service('ban.ip_manager')->isBanned(\Drupal::request()->getClientIp())) {
           drupal_set_message(t('You have tried to use a one-time login for an account which has been blocked.'), 'error');
           return $this->redirect('<front>');
         }
 
-        // Deny one-time login to accounts without permission
+        // Deny one-time login to accounts without permission.
         if (!$account->hasPermission('use link to login one time')) {
           drupal_set_message(t('You have tried to use a one-time login for an account which is no longer permitted to use one-time login links.'), 'error');
           return $this->redirect("<front>");
@@ -113,6 +113,9 @@ class LoginOneTimeController extends ControllerBase {
     return urlencode($_REQUEST['destination']);
   }
 
+  /**
+   *
+   */
   public function autocomplete() {
     // If the request has a '/' in the search text, then the menu system will have
     // split it into multiple arguments, recover the intended $autocomplete.
@@ -121,4 +124,5 @@ class LoginOneTimeController extends ControllerBase {
 
     return new JsonResponse(LoginOneTimeOption::userOptions($autocomplete));
   }
+
 }

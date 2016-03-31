@@ -1,14 +1,14 @@
 <?php
 /**
- * @file \Drupal\login_one_time\LoginOneTimeSendMail
+ * @file \Drupal\login_one_time\LoginOneTimeSendMail.
  */
 
 namespace Drupal\login_one_time;
 
-use \Drupal\Core\Controller\ControllerBase;
-use \Symfony\Component\HttpFoundation\Request;
 use \Drupal\Core\Url;
-
+/**
+ *
+ */
 class LoginOneTimeSendMail {
 
   /**
@@ -84,10 +84,11 @@ class LoginOneTimeSendMail {
    * Return an array of token to value mappings for user e-mail messages.
    *
    * @param $account
-   *  The user object of the account being notified.  Must contain at
-   *  least the fields 'uid', 'name', and 'mail'.
+   *   The user object of the account being notified.  Must contain at
+   *   least the fields 'uid', 'name', and 'mail'.
    * @param $language
-   *  Language object to generate the tokens with.
+   *   Language object to generate the tokens with.
+   *
    * @return
    *  Array of mappings from token names to values (for use with strtr()).
    *
@@ -105,7 +106,8 @@ class LoginOneTimeSendMail {
       '!mailto' => $account->getEmail(),
       '!date' => format_date(REQUEST_TIME),
       '!login_uri' => Url::fromUserInput('/user', array('absolute' => TRUE, 'language' => $language))->toString(),
-      '!edit_uri' => Url::fromUserInput('/user/' . $account->get('uid')->value . '/edit', array('absolute' => TRUE, 'language' => $language))->toString(), //fix
+    // Fix.
+      '!edit_uri' => Url::fromUserInput('/user/' . $account->get('uid')->value . '/edit', array('absolute' => TRUE, 'language' => $language))->toString(),
     );
 
     if (!empty($account->password)) {
@@ -140,6 +142,7 @@ class LoginOneTimeSendMail {
       switch ($key) {
         case 'email_template.subject':
           return t('One-time login link for [user:name] at [site:name]', $variables, $options);
+
         case 'email_template.body':
           return t("[user:name],\n\nA request to give you a one-time login for your account has been made at [site:name].\n\nYou may now log in to [site:url-brief] by clicking on this link or copying and pasting it in your browser:\n\n[user:login-one-time]\n\nThis is a one-time login, so it can be used only once.  It expires in two weeks and nothing will happen if it's not used.\n\n--  [site:name] team", $variables, $options);
       }
@@ -147,12 +150,11 @@ class LoginOneTimeSendMail {
   }
 
   /**
-   * Generate a one-time link for the $account
+   * Generate a one-time link for the $account.
    */
   public function loginOneTimeGetLink(\Drupal\user\UserInterface $account, $path = NULL) {
 
     // Path juggle - watch closely now....
-
     // If there is no path get the default path.
     if (!$path) {
       $path = \Drupal::config('login_one_time.settings')->get('path_default');
@@ -172,7 +174,7 @@ class LoginOneTimeSendMail {
     }
 
     $timestamp = REQUEST_TIME;
-    $id =  $account->get('uid')->value;
+    $id = $account->get('uid')->value;
     $hash = user_pass_rehash($account, $timestamp);
     $url = Url::fromRoute(
       "login_one_time.page",
@@ -185,4 +187,5 @@ class LoginOneTimeSendMail {
     )->toString();
     return $url;
   }
+
 }

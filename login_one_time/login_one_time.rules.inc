@@ -1,6 +1,10 @@
 <?php
 
 /**
+ * @file
+ */
+
+/**
  * Implements hook_rules_event_info().
  *
  * @ingroup rules
@@ -22,6 +26,7 @@ function login_one_time_rules_event_info() {
 
 /**
  * Implementation of hook_rules_action_info().
+ *
  * @ingroup rules
  */
 function login_one_time_rules_action_info() {

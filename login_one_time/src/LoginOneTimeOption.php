@@ -1,12 +1,14 @@
 <?php
 /**
- * @file \Drupal\login_one_time\LoginOneTime
+ * @file \Drupal\login_one_time\LoginOneTime.
  */
 
 namespace Drupal\login_one_time;
 
 use \Drupal\Component\Utility\SafeMarkup;
-
+/**
+ *
+ */
 class LoginOneTimeOption {
 
   /**
@@ -31,7 +33,7 @@ class LoginOneTimeOption {
     }
     return $form;
   }
-  
+
   /**
    * Generate the users widget options.
    */
@@ -44,29 +46,29 @@ class LoginOneTimeOption {
       $form = array(
         '#type' => 'entity_autocomplete',
         '#target_type' => 'user',
-        //'#default_value' => $username,
+        // '#default_value' => $username,.
         '#selection_settings' => [
           'filter' => ['role' => $permitted_role_ids],
         ],
         '#size' => 30,
         '#required' => TRUE,
       );
-      //kint($form);
+      // kint($form);
     }
     else {
-     $form = array(
-       '#type' => 'select',
-       '#default_value' => $username,
-       '#options' => array('' => t("- Choose a user -")) + self::userOptions(),
-       '#required' => TRUE,
-     );
-   }
-   if ($title) {
-     $form['#title'] = $title;
-   }
-  return $form;
-}
-  
+      $form = array(
+        '#type' => 'select',
+        '#default_value' => $username,
+        '#options' => array('' => t("- Choose a user -")) + self::userOptions(),
+        '#required' => TRUE,
+      );
+    }
+    if ($title) {
+      $form['#title'] = $title;
+    }
+    return $form;
+  }
+
   /**
    * Build the list of path select widget options.
    */
@@ -157,4 +159,5 @@ class LoginOneTimeOption {
 
     return $options;
   }
+
 }
