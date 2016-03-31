@@ -110,7 +110,7 @@ class LoginOneTimeButtonForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $uid = $form_state->getValue('account');
-    $account = User::load($uid);
+    $account = is_numeric($uid) ? User::load($uid) : user_load_by_name($uid);
     $set_mail = !empty($form_state->getValue('set_mail')) ? $form_state->getValue('set_mail') : NULL;
 
     $sendMailService =  new LoginOneTimeSendMail();

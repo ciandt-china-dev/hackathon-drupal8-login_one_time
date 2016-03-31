@@ -140,7 +140,7 @@ class LoginOneTimeOption {
         $args[':autocomplete'] = '%' . $autocomplete . '%';
       }
       $result = db_query(
-        'SELECT u.name AS name FROM {users_field_data} u'
+        'SELECT u.uid,u.name AS name FROM {users_field_data} u'
         . ' INNER JOIN {user__roles} ur ON u.uid = ur.entity_id AND ur.roles_target_id IN ( :rids[] )'
         . ' WHERE u.status <> 0'
         . $where
@@ -148,7 +148,7 @@ class LoginOneTimeOption {
         $args
       )->fetchAll();
       foreach ($result as $row) {
-        $options[$row->name] = SafeMarkup::checkPlain($row->name);
+        $options[$row->uid] = SafeMarkup::checkPlain($row->name);
       }
     }
 
