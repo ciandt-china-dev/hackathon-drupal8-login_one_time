@@ -1,30 +1,26 @@
 <?php
 
 /**
-
  * @file
  * The Login one time module.
  */
-use Drupal\login_one_time\Controller;
+
 use Drupal\Core\Url;
 use Drupal\login_one_time\LoginOneTimeSendMail;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\user\UserInterface;
+use Drupal\Core\Mail\MailFormatHelper;
 
 /**
  * Implements hook_user_view_alter().
  */
-function login_one_time_user_view_alter(&$build, \Drupal\user\UserInterface $account, EntityViewDisplayInterface $display) {
-  $config = \Drupal::config('login_one_time.settings');
+function login_one_time_user_view_alter(&$build, UserInterface $account, EntityViewDisplayInterface $display) {
+  $config      = \Drupal::config('login_one_time.settings');
   $current_url = Url::fromRoute('<current>');
-  $uri = $current_url->getInternalPath();
+  $uri         = $current_url->getInternalPath();
   // It will improve below.
-  if (
-    $account->hasPermission('use link to login one time') &&
-    $account->hasPermission('send link to login one time') &&
-    $config->get('user_view') &&
-    preg_match('/user\/\d+/i',$uri)
-  ) {
+  if ($account->hasPermission('use link to login one time') && $account->hasPermission('send link to login one time') && $config->get('user_view') && preg_match('/user\/\d+/i', $uri)) {
     $select                  = \Drupal::config('login_one_time.settings')
       ->get('login_one_time_user_select');
     $set_mail                = \Drupal::config('login_one_time.settings')
@@ -36,29 +32,28 @@ function login_one_time_user_view_alter(&$build, \Drupal\user\UserInterface $acc
       '#weight' => 10,
     );
   }
-  // Add a #post_render callback to act on the rendered HTML of the user.
-  // $build['#post_render'][] = 'my_module_user_post_render';.
 }
 
 /**
  * Get a login one time form.
  *
- * @param $username
+ * @param string $username
  *   If supplied force the email to go to this user, if not supplied will
  *   display a select element with all active users. NOTE: It is assumed that
  *   this user has permission to use login one time links, if they do not the
  *   button will still appear but the mail will not be sent.
- * @param $path
+ * @param string $path
  *   If supplied will force the emailed link to redirect to this path. If not
  *   supplied will use default setting, or fallback to the URL of the page this
  *   code is called from.  Supply empty string to prompt for selection.
- * @param $select
+ * @param bool $select
  *   If TRUE will display a select element to choose from configured paths, the
  *   default choice will come from $path or be calculated the same way, or if
  *   empty string supplied it will prompt for selection.
- * @param $set_mail
+ * @param bool $set_mail
  *   If TRUE shows textbox to override the recipient email address.
- * @return
+ *
+ * @return NULL|string
  *   The HTML string of the form, for use in output.
  */
 function login_one_time_button($username = NULL, $path = NULL, $select = FALSE, $set_mail = FALSE) {
@@ -68,7 +63,8 @@ function login_one_time_button($username = NULL, $path = NULL, $select = FALSE, 
       $username = $username->name;
     }
     $form_id = 'Drupal\login_one_time\Form\LoginOneTimeButtonFormUser';
-    $form = \Drupal::formBuilder()->getForm($form_id, $username, $path, $select, $set_mail);
+    $form    = \Drupal::formBuilder()
+      ->getForm($form_id, $username, $path, $select, $set_mail);
     return \Drupal::service("renderer")->render($form);
   }
   return NULL;
@@ -79,24 +75,24 @@ function login_one_time_button($username = NULL, $path = NULL, $select = FALSE, 
  */
 function login_one_time_mail($key, &$message, $params) {
   if ($key == 'login_one_time_key') {
-    $account = $params['account'];
-    $language  = isset($message['langcode'])? $message['langcode'] : '';
+    $account  = $params['account'];
+    $language = isset($message['langcode']) ? $message['langcode'] : '';
     if (!$language) {
       $language = $params['language'];
     }
-    $path      = &$params['path'];
-    $loginSendService =  new LoginOneTimeSendMail();
-    $variables = $loginSendService->loginOneTimeMailTokens($account, $language, $path);
+    $path             = &$params['path'];
+    $loginSendService = new LoginOneTimeSendMail();
+    $variables        = $loginSendService->loginOneTimeMailTokens($account, $language, $path);
 
     $subject = $loginSendService->loginOneTimeMailText('email_template.subject', $path, $language, $variables);
-    $body = $loginSendService->loginOneTimeMailText('email_template.body', $path, $language, $variables);
+    $body    = $loginSendService->loginOneTimeMailText('email_template.body', $path, $language, $variables);
 
     $subject = \Drupal::token()->replace($subject, array('user' => $account));
-    $body = \Drupal::token()->replace($body, array('user' => $account));
+    $body    = \Drupal::token()->replace($body, array('user' => $account));
 
     $message['subject'] .= $subject;
-    $body = Drupal\Core\Mail\MailFormatHelper::htmlToText($body);
-    $message['body'][] = Drupal\Core\Mail\MailFormatHelper::htmlToText($body);
+    $body              = MailFormatHelper::htmlToText($body);
+    $message['body'][] = MailFormatHelper::htmlToText($body);
   }
 }
 
@@ -105,7 +101,7 @@ function login_one_time_mail($key, &$message, $params) {
  */
 function login_one_time_user_operations() {
   $operations = array();
-  $options = login_one_time_path_options();
+  $options    = login_one_time_path_options();
   foreach ($options as $path => $display) {
     $operations['login_one_time_bulk_send_mail_' . $path] = array(
       'label' => t('Send one-time login link to the selected users (!display)', array('!display' => $display)),
@@ -119,21 +115,18 @@ function login_one_time_user_operations() {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function login_one_time_form_user_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+function login_one_time_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // Remove the current password field from user profile edit form
   // and disable validation.
-  if (\Drupal::config('login_one_time.settings')->get('ignore_current_pass') && isset($_SESSION['ignore_current_pass']) && $_SESSION['ignore_current_pass']) {
-    // Check for the current password validation hook, and disable it.
-
-    // todo: Do not validate current password.
+  if (\Drupal::config('login_one_time.settings')
+      ->get('ignore_current_pass') && isset($_SESSION['ignore_current_pass']) && $_SESSION['ignore_current_pass']
+  ) {
     $key = array_search('user_validate_current_pass', $form['#validate']);
 
     if ($key !== FALSE) {
       unset($form['#validate'][$key]);
     }
 
-    // Disable the current password form.
-    //$form['account']['current_pass_required_value']['#access'] = FALSE;
     $form['account']['current_pass']['#access'] = FALSE;
   }
 }
@@ -152,28 +145,12 @@ function login_one_time_tokens($type, $tokens, $data = array(), $options = array
       switch ($name) {
         // Simple key values on the node.
         case 'login-one-time':
-          $path = isset($data['path']) ? $data['path'] : NULL;
+          $path                    = isset($data['path']) ? $data['path'] : NULL;
           $replacements[$original] = $send_mail_service->loginOneTimeGetLink($account, $path);
-        break;
+          break;
       }
     }
   }
-/*  if ($type == 'comment' & !empty($data['comment'])) {
-    $comment = $data['comment'];
-
-    foreach ($tokens as $name => $original) {
-      switch($name) {
-        case 'login-one-time':
-          $node = \Drupal::entityManager()->getStorage('node')->load($comment->nid);
-          $author = \Drupal::entityManager()->getStorage('user')->load($node->uid);
-          // @FIXME
-// url() expects a route name or an external URI.
-          $replacements[$original] = $send_mail_service->loginOneTimeGetLink($author, Url::fromUserInput("/node/$node->nid") . '#' . $comment->cid);
-
-        break;
-      }
-    }
-  }*/
   return $replacements;
 }
 
@@ -197,7 +174,7 @@ function login_one_time_token_info() {
 /**
  * Set all user roles to have the permission to use login one time links.
  *
- * @return
+ * @return bool
  *   TRUE if operation was performed, FALSE if it was not needed.
  */
 function login_one_time_force_permissions() {
@@ -214,63 +191,12 @@ function login_one_time_force_permissions() {
 }
 
 /**
- * Implements hook_action_info().
- */
-function login_one_time_action_info() {
-  return array(
-    'login_one_time_send_mail_action' => array(
-      'label' => t('Send a login one-time email.'),
-      'type' => 'user',
-      'configurable' => TRUE,
-      'triggers' => array('any'),
-    ),
-  );
-}
-
-/**
- * Generates settings form for login_one_time_send_mail_action().
- */
-function login_one_time_send_mail_action_form($context) {
-  $form['path'] = login_one_time_select_widget();
-  $form['path']['#title'] = t('Select a destination path');
-  unset($form['path']['#options']['login_one_time[current]']);
-
-  return $form;
-}
-
-/**
- * Submit handler for login_one_time_send_mail_action_form().
- *
- * Returns an associative array of values which will be available in the
- * $context when an action is executed.
- */
-function login_one_time_send_mail_action_submit($form, $form_state) {
-  return array('path' => $form_state['values']['path']);
-}
-
-/**
- * Action function for login_one_time_send_mail_action.
- *
- * @param $entity
- *   The user object being acted upon.
- * @param $context
- *   Array with parameters for this action: depends on the trigger.
- */
-function login_one_time_send_mail_action(&$account, $context = array()) {
-  login_one_time_send_mail($account, $context['path']);
-}
-
-/**
- * Implements hook_form_FORM_ID_alter() for "login one time" email template 
- * configurations.
- *
- * This function adds two elements which are email subject and body to user 
- * account setting form.
+ * Implements hook_form_FORM_ID_alter().
  */
 function login_one_time_form_user_admin_settings_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $email_token_help = t('Available variables are: [site:name], [site:url], [user:display-name], [user:account-name], [user:mail], [site:login-url], [site:url-brief], [user:edit-url], [user:one-time-login-url], [user:cancel-url].');
-  $mail_config = \Drupal::config('login_one_time.settings');
-  $form['login_one_time'] = array(
+  $email_token_help                                 = t('Available variables are: [site:name], [site:url], [user:display-name], [user:account-name], [user:mail], [site:login-url], [site:url-brief], [user:edit-url], [user:one-time-login-url], [user:cancel-url].');
+  $mail_config                                      = \Drupal::config('login_one_time.settings');
+  $form['login_one_time']                           = array(
     '#type' => 'details',
     '#title' => t('Login one time e-mail'),
     '#group' => 'email',
@@ -283,13 +209,13 @@ function login_one_time_form_user_admin_settings_alter(&$form, FormStateInterfac
     '#default_value' => $mail_config->get('email_template.subject'),
     '#maxlength' => 180,
   );
-  $form['login_one_time']['login_one_time_body'] = array(
+  $form['login_one_time']['login_one_time_body']    = array(
     '#type' => 'textarea',
     '#title' => t('Login one time Body'),
     '#default_value' => $mail_config->get('login_one_time_body'),
     '#rows' => 12,
   );
-  $form['actions']['submit']['#submit'][] = 'login_one_time_config_save';
+  $form['actions']['submit']['#submit'][]           = 'login_one_time_config_save';
   return $form;
 
 }
@@ -297,13 +223,14 @@ function login_one_time_form_user_admin_settings_alter(&$form, FormStateInterfac
 /**
  * Save user email temaplate configuration values.
  *
- * @param $form
+ * @param array $form
  *   Form.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   Form state.
  */
 function login_one_time_config_save(&$form, FormStateInterface $form_state) {
-  $mail_config = \Drupal::configFactory()->getEditable('login_one_time.settings');
+  $mail_config = \Drupal::configFactory()
+    ->getEditable('login_one_time.settings');
   $mail_config->set('email_template.subject', $form_state->getValue('login_one_time_subject'));
   $mail_config->set('email_template.body', $form_state->getValue('login_one_time_body'));
   $mail_config->save();
