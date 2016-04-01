@@ -1,12 +1,14 @@
 <?php
+namespace Drupal\login_one_time;
+
 /**
  * @file
  * Contains \Drupal\login_one_time\LoginOneTimeSendMail.
  */
 
-namespace Drupal\login_one_time;
+use Drupal\Core\Url;
+use Drupal\user\UserInterface;
 
-use \Drupal\Core\Url;
 /**
  * Login One Time Module Sent mail.
  */
@@ -25,7 +27,7 @@ class LoginOneTimeSendMail {
    * @return array
    *   Drupal markup.
    */
-  public function sendMail(\Drupal\user\UserInterface $account, $path, $sendmail = NULL) {
+  public function sendMail(UserInterface $account, $path, $sendmail = NULL) {
     $result = self::loginOneTimeSendMail($account, $path, $sendmail);
     return array("#markup" => $result);
   }
@@ -33,7 +35,7 @@ class LoginOneTimeSendMail {
   /**
    * Send mail.
    *
-   * @param \Drupal\user\UserInterface $account
+   * @param UserInterface $account
    *   Account.
    * @param string $path
    *   Destination path.
@@ -41,9 +43,8 @@ class LoginOneTimeSendMail {
    *   Send mail.
    *
    * @return bool|null|string
-   *   Logi nOne Time Mail Notify.
    */
-  public function loginOneTimeSendMail(\Drupal\user\UserInterface $account, $path, $sendmail) {
+  public function loginOneTimeSendMail(UserInterface $account, $path, $sendmail) {
     $user = \Drupal::currentUser();
     if ($user->hasPermission('use link to login one time')) {
       return self::loginOneTimeMailNotify('login_one_time_key', $account, $path, $sendmail);
@@ -59,7 +60,7 @@ class LoginOneTimeSendMail {
    *
    * @param string $op
    *   This is the key.
-   * @param \Drupal\user\UserInterface $account
+   * @param UserInterface $account
    *   Account.
    * @param string $path
    *   Destination path.
@@ -71,7 +72,7 @@ class LoginOneTimeSendMail {
    * @return bool|null|string
    *   Notify success or not.
    */
-  public function loginOneTimeMailNotify($op, \Drupal\user\UserInterface $account, $path, $email = NULL, $language = NULL) {
+  public function loginOneTimeMailNotify($op, UserInterface $account, $path, $email = NULL, $language = NULL) {
     $params['account'] = $account;
     $language = $account->language();
     $params['path']    = $path;
@@ -104,7 +105,7 @@ class LoginOneTimeSendMail {
    *
    * @todo: To be deprecated.
    */
-  public function loginOneTimeMailTokens(\Drupal\user\UserInterface $account, $language, $path = NULL) {
+  public function loginOneTimeMailTokens($account, $language, $path = NULL) {
     global $base_url;
     $config = \Drupal::config('system.site');
     $tokens = array(
@@ -116,7 +117,6 @@ class LoginOneTimeSendMail {
       '!mailto' => $account->getEmail(),
       '!date' => format_date(REQUEST_TIME),
       '!login_uri' => Url::fromUserInput('/user', array('absolute' => TRUE, 'language' => $language))->toString(),
-    // Fix.
       '!edit_uri' => Url::fromUserInput('/user/' . $account->get('uid')->value . '/edit', array('absolute' => TRUE, 'language' => $language))->toString(),
     );
 
@@ -162,7 +162,7 @@ class LoginOneTimeSendMail {
   /**
    * Generate a one-time link for the $account.
    */
-  public function loginOneTimeGetLink(\Drupal\user\UserInterface $account, $path = NULL) {
+  public function loginOneTimeGetLink($account, $path = NULL) {
 
     // Path juggle - watch closely now....
     // If there is no path get the default path.
