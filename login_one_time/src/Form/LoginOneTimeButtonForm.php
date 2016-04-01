@@ -115,26 +115,27 @@ class LoginOneTimeButtonForm extends FormBase {
    * Submit function for the form to send a one-time login link.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $uid = $form_state->getValue('account');
-    $account = User::load($uid);
-    $set_mail = !empty($form_state->getValue('set_mail')) ? $form_state->getValue('set_mail') : NULL;
-
-    $mail_service = new LoginOneTimeSendMail();
-    $result = $mail_service->sendMail($account, $form_state->getValue('path'), $set_mail);
-    if ($result) {
-      drupal_set_message(
-        t(
-          "A one-time login link has been sent to @username.",
-          array('@username' => $account->getAccountName())
-        )
-      );
+    $uid        = $form_state->getValue('account');
+    $build_info = $form_state->getBuildInfo();
+    if ($build_info['form_id'] == 'login_one_time_button_user') {
+      $account = user_load_by_name($uid);
     }
     else {
-      drupal_set_message(
-        t("There was a problem sending the one-time login link."),
-        'error'
-      );
+      $account = User::load($uid);
+    }
+    if ($account) {
+      $set_mail     = !empty($form_state->getValue('set_mail')) ? $form_state->getValue('set_mail') : NULL;
+      $mail_service = new LoginOneTimeSendMail();
+      $result       = $mail_service->sendMail($account, $form_state->getValue('path'), $set_mail);
+      if ($result) {
+        drupal_set_message(t("A one-time login link has been sent to @username.", array('@username' => $account->getAccountName())));
+      }
+      else {
+        drupal_set_message(t("There was a problem sending the one-time login link."), 'error');
+      }
+    }
+    else {
+      drupal_set_message(t("User was blocked."), 'error');
     }
   }
-
 }
