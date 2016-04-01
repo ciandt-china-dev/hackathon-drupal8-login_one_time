@@ -1,13 +1,14 @@
 <?php
 /**
- * @file \Drupal\login_one_time\LoginOneTime.
+ * @file
+ * Contains \Drupal\login_one_time\LoginOneTimeOption.
  */
 
 namespace Drupal\login_one_time;
 
 use \Drupal\Component\Utility\SafeMarkup;
 /**
- *
+ * LoginOneTime Option  Class.
  */
 class LoginOneTimeOption {
 

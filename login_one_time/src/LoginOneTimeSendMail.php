@@ -1,25 +1,29 @@
 <?php
 /**
- * @file \Drupal\login_one_time\LoginOneTimeSendMail.
+ * @file
+ * Contains \Drupal\login_one_time\LoginOneTimeSendMail.
  */
 
 namespace Drupal\login_one_time;
 
 use \Drupal\Core\Url;
 /**
- *
+ * Login One Time Module Sent mail.
  */
 class LoginOneTimeSendMail {
 
   /**
+   * Return Send mail result.
+   *
    * @param \Drupal\user\UserInterface $account
    *   Account.
-   * @param $path
+   * @param string $path
    *   Destination path.
-   * @param null $sendmail
+   * @param string $sendmail
    *   Send mail.
    *
    * @return array
+   *   Drupal markup.
    */
   public function sendMail(\Drupal\user\UserInterface $account, $path, $sendmail = NULL) {
     $result = self::loginOneTimeSendMail($account, $path, $sendmail);
@@ -27,14 +31,17 @@ class LoginOneTimeSendMail {
   }
 
   /**
+   * Send mail.
+   *
    * @param \Drupal\user\UserInterface $account
    *   Account.
-   * @param $path
+   * @param string $path
    *   Destination path.
-   * @param $sendmail
+   * @param string $sendmail
    *   Send mail.
    *
    * @return bool|null|string
+   *   Logi nOne Time Mail Notify.
    */
   public function loginOneTimeSendMail(\Drupal\user\UserInterface $account, $path, $sendmail) {
     $user = \Drupal::currentUser();
@@ -48,18 +55,21 @@ class LoginOneTimeSendMail {
   }
 
   /**
-   * @param $op
+   * Login one time mail notify.
+   *
+   * @param string $op
    *   This is the key.
    * @param \Drupal\user\UserInterface $account
    *   Account.
-   * @param $path
+   * @param string $path
    *   Destination path.
-   * @param null $email
+   * @param string $email
    *   Send to mail.
-   * @param null $language
+   * @param string $language
    *   Language object.
    *
    * @return bool|null|string
+   *   Notify success or not.
    */
   public function loginOneTimeMailNotify($op, \Drupal\user\UserInterface $account, $path, $email = NULL, $language = NULL) {
     $params['account'] = $account;
@@ -83,14 +93,14 @@ class LoginOneTimeSendMail {
   /**
    * Return an array of token to value mappings for user e-mail messages.
    *
-   * @param $account
+   * @param object $account
    *   The user object of the account being notified.  Must contain at
    *   least the fields 'uid', 'name', and 'mail'.
-   * @param $language
+   * @param string $language
    *   Language object to generate the tokens with.
    *
-   * @return
-   *  Array of mappings from token names to values (for use with strtr()).
+   * @return array
+   *   Array of mappings from token names to values (for use with strtr()).
    *
    * @todo: To be deprecated.
    */

@@ -1,6 +1,7 @@
 <?php
 /**
- * @file \Drupal\login_one_time\Controller\LoginOneTimeController.
+ * @file
+ * Contains \Drupal\login_one_time\Controller\LoginOneTimeController.
  */
 
 namespace Drupal\login_one_time\Controller;
@@ -12,12 +13,12 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Drupal\login_one_time\LoginOneTimeOption;
 use Symfony\Component\HttpFoundation\JsonResponse;
 /**
- *
+ * Deal with one time login.
  */
 class LoginOneTimeController extends ControllerBase {
 
   /**
-   *
+   * Deal with one time login.
    */
   public function page($uid, $timestamp, $hashed_pass) {
 
@@ -26,7 +27,7 @@ class LoginOneTimeController extends ControllerBase {
     if ($user->isAuthenticated()) {
       drupal_set_message(t('It is not necessary to use this link to login anymore. You are already logged in.'));
 
-      $action = $this->get_action_path();
+      $action = $this->getActionPath();
 
       if (!empty($action)) {
         return new RedirectResponse($action);
@@ -66,7 +67,7 @@ class LoginOneTimeController extends ControllerBase {
 
         elseif ($timestamp > $account->getLastLoginTime() && $timestamp < $current && $hashed_pass == user_pass_rehash($account, $timestamp)) {
 
-          $action = $this->get_action_path();
+          $action = $this->getActionPath();
 
           \Drupal::logger('user')->notice('User %name used one-time login link at time %timestamp.', array('%name' => $account->name, '%timestamp' => $timestamp));
           // Set the new user.
@@ -109,12 +110,12 @@ class LoginOneTimeController extends ControllerBase {
   /**
    * Get the action path for redirect.
    */
-  protected function get_action_path() {
+  protected function getActionPath() {
     return urlencode($_REQUEST['destination']);
   }
 
   /**
-   *
+   * Deal with request.
    */
   public function autocomplete() {
     // If the request has a '/' in the search text, then the menu system will have
