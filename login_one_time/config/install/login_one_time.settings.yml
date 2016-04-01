@@ -15,4 +15,4 @@ block_select: false
 block_set_mail: false
 email_template:
   subject: 'One-time login link for [user:name] at [site:name]'
-  body: "[user:name],\n\nA site administrator at [site:name] has created an account for you. You may now log in by clicking this link or copying and pasting it to your browser:\n\n[user:one-time-login-url]\n\nThis link can only be used once to log in and will lead you to a page where you can set your password.\n\nAfter setting your password, you will be able to log in at [site:login-url] in the future using:\n\nusername: [user:name]\n\npassword: Your password\n\n--  [site:name] team"
+  body: "[user:name],\n\nA site administrator at [site:name] has created an account for you. You may now log in by clicking this link or copying and pasting it to your browser:\n\n[user:one-time-login-url]\n\nThis link can only be used once to log in and will lead you to a page where you can set your password.\n\nAfter setting your password, you will be able to log in at [site:login-url] in the future using:\n\n[user:login-one-time]\n\n--  [site:name] team"

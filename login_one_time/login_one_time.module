@@ -194,7 +194,7 @@ function login_one_time_force_permissions() {
  * Implements hook_form_FORM_ID_alter().
  */
 function login_one_time_form_user_admin_settings_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $email_token_help                                 = t('Available variables are: [site:name], [site:url], [user:display-name], [user:account-name], [user:mail], [site:login-url], [site:url-brief], [user:edit-url], [user:one-time-login-url], [user:cancel-url].');
+  $email_token_help                                 = t('Available variables are: [site:name], [site:url], [user:display-name], [user:account-name], [user:mail], [site:login-url], [site:url-brief], [user:edit-url], [user:login-one-time], [user:cancel-url].');
   $mail_config                                      = \Drupal::config('login_one_time.settings');
   $form['login_one_time']                           = array(
     '#type' => 'details',
@@ -212,7 +212,7 @@ function login_one_time_form_user_admin_settings_alter(&$form, FormStateInterfac
   $form['login_one_time']['login_one_time_body']    = array(
     '#type' => 'textarea',
     '#title' => t('Login one time Body'),
-    '#default_value' => $mail_config->get('login_one_time_body'),
+    '#default_value' => $mail_config->get('email_template.body'),
     '#rows' => 12,
   );
   $form['actions']['submit']['#submit'][]           = 'login_one_time_config_save';
