@@ -1,6 +1,7 @@
 <?php
 /**
- * @file \Drupal\login_one_time\LoginOneTimeButtonForm
+ * @file
+ * Drupal\login_one_time\LoginOneTimeButtonForm.
  */
 
 namespace Drupal\login_one_time\Form;
@@ -11,7 +12,13 @@ use Drupal\login_one_time\LoginOneTimeOption;
 use Drupal\login_one_time\LoginOneTimeSendMail;
 use Drupal\user\Entity\User;
 
+/**
+ * Class LoginOneTimeButtonForm.
+ *
+ * @package Drupal\login_one_time\Form
+ */
 class LoginOneTimeButtonForm extends FormBase {
+
   /**
    * {@inheritdoc}
    */
@@ -27,27 +34,26 @@ class LoginOneTimeButtonForm extends FormBase {
   }
 
   /**
-   * Form to send a one-time login link
+   * Form to send a one-time login link.
    *
-   * @param $form
-   * @param $form_state
-   * @param $username
+   * @param string $username
    *   If supplied force the email to go to this user, if not supplied will
    *   display a select element with all active users. NOTE: It is assumed that
    *   this user has permission to use login one time links, if they do not the
    *   button will still appear but the mail will not be sent.
-   * @param $path
+   * @param string $path
    *   If supplied will force the emailed link to redirect to this path. If not
-   *   supplied will use default setting, or fallback to the URL of the page this
-   *   code is called from.  Supply empty string to prompt for selection.
-   * @param $select
-   *   If TRUE will display a select element to choose from configured paths, the
-   *   default choice will come from $path or be calculated the same way, or if
-   *   empty string supplied it will prompt for selection.
-   * @param $set_mail
+   *   supplied will use default setting, or fallback to the URL of the page
+   *   this code is called from.  Supply empty string to prompt for selection.
+   * @param bool $select
+   *   If TRUE will display a select element to choose from configured paths,
+   *   the default choice will come from $path or be calculated the same way,
+   *   or if empty string supplied it will prompt for selection.
+   * @param bool $set_mail
    *   If TRUE shows textbox to override the recipient email address.
    *
    * @return array
+   *   The form elements.
    */
   public function buildForm(array $form, FormStateInterface $form_state, $username = NULL, $path = NULL, $select = FALSE, $set_mail = FALSE) {
     $form = array();
@@ -110,11 +116,11 @@ class LoginOneTimeButtonForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $uid = $form_state->getValue('account');
-    $account = is_numeric($uid) ? User::load($uid) : user_load_by_name($uid);
+    $account = User::load($uid);
     $set_mail = !empty($form_state->getValue('set_mail')) ? $form_state->getValue('set_mail') : NULL;
 
-    $sendMailService =  new LoginOneTimeSendMail();
-    $result = $sendMailService->sendMail($account, $form_state->getValue('path'), $set_mail);
+    $mail_service = new LoginOneTimeSendMail();
+    $result = $mail_service->sendMail($account, $form_state->getValue('path'), $set_mail);
     if ($result) {
       drupal_set_message(
         t(
