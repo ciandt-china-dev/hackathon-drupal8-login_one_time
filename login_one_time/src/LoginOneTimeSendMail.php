@@ -28,7 +28,7 @@ class LoginOneTimeSendMail {
    *   Drupal markup.
    */
   public function sendMail(UserInterface $account, $path, $sendmail = NULL) {
-    $result = self::loginOneTimeSendMail($account, $path, $sendmail);
+    $result = $this->loginOneTimeSendMail($account, $path, $sendmail);
     return array("#markup" => $result);
   }
 
@@ -47,7 +47,7 @@ class LoginOneTimeSendMail {
   public function loginOneTimeSendMail(UserInterface $account, $path, $sendmail) {
     $user = \Drupal::currentUser();
     if ($user->hasPermission('use link to login one time')) {
-      return self::loginOneTimeMailNotify('login_one_time_key', $account, $path, $sendmail);
+      return $this->loginOneTimeMailNotify('login_one_time_key', $account, $path, $sendmail);
 
     }
     else {
@@ -111,7 +111,7 @@ class LoginOneTimeSendMail {
     $tokens = array(
       '!username' => $account->getAccountName(),
       '!site' => $config->get('name') ? $config->get('name') : 'drupal',
-      '!login_url' => self::loginOneTimeGetLink($account, $path),
+      '!login_url' => $this->loginOneTimeGetLink($account, $path),
       '!uri' => $base_url,
       '!uri_brief' => preg_replace('!^https?://!', '', $base_url),
       '!mailto' => $account->getEmail(),
