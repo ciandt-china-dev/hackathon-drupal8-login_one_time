@@ -13,11 +13,3 @@ login_one_time.admin:
   requirements:
     _permission: 'administer site configuration'
 
-login_one_time.autocomplete:
-  path: 'login_one_time_autocomplete_users'
-  defaults:
-    _controller: '\Drupal\login_one_time\Controller\LoginOneTimeController::autocomplete'
-    _title: 'Login one time autocomplete users'
-  requirements:
-    _permission: 'access content'
-

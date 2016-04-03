@@ -10,8 +10,6 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\user\Entity\User;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Drupal\login_one_time\LoginOneTimeOption;
-use Symfony\Component\HttpFoundation\JsonResponse;
 /**
  * Deal with one time login.
  */
@@ -112,18 +110,6 @@ class LoginOneTimeController extends ControllerBase {
    */
   protected function getActionPath() {
     return urlencode($_REQUEST['destination']);
-  }
-
-  /**
-   * Deal with request.
-   */
-  public function autocomplete() {
-    // If the request has a '/' in the search text, then the menu system will have
-    // split it into multiple arguments, recover the intended $autocomplete.
-    $args = func_get_args();
-    $autocomplete = implode('/', $args);
-
-    return new JsonResponse(LoginOneTimeOption::userOptions($autocomplete));
   }
 
 }
