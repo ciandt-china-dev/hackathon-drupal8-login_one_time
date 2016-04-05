@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - user
+id: user_send_mail_action
+label: 'Login one time send mail'
+type: user
+plugin: user_send_mail_action
+configuration: {  }
