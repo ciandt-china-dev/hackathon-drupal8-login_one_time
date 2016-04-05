@@ -138,4 +138,5 @@ class LoginOneTimeButtonForm extends FormBase {
       drupal_set_message(t("User was blocked."), 'error');
     }
   }
+
 }

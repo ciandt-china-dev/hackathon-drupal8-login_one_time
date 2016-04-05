@@ -19,5 +19,5 @@ class LoginOneTimeButtonFormUser extends LoginOneTimeButtonForm {
   public function getFormId() {
     return 'login_one_time_button_user';
   }
-  
+
 }

@@ -81,11 +81,11 @@ function login_one_time_mail($key, &$message, $params) {
       $language = $params['language'];
     }
     $path             = &$params['path'];
-    $loginSendService = new LoginOneTimeSendMail();
-    $variables        = $loginSendService->loginOneTimeMailTokens($account, $language, $path);
+    $login_send_service = new LoginOneTimeSendMail();
+    $variables        = $login_send_service->loginOneTimeMailTokens($account, $language, $path);
 
-    $subject = $loginSendService->loginOneTimeMailText('email_template.subject', $path, $language, $variables);
-    $body    = $loginSendService->loginOneTimeMailText('email_template.body', $path, $language, $variables);
+    $subject = $login_send_service->loginOneTimeMailText('email_template.subject', $path, $language, $variables);
+    $body    = $login_send_service->loginOneTimeMailText('email_template.body', $path, $language, $variables);
 
     $subject = \Drupal::token()->replace($subject, array('user' => $account));
     $body    = \Drupal::token()->replace($body, array('user' => $account));

@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * @file
+ * Login One Time Send Mail.
+ */
+
 namespace Drupal\login_one_time;
 
 /**
