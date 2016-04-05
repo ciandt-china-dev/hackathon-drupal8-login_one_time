@@ -91,7 +91,6 @@ function login_one_time_mail($key, &$message, $params) {
     $body    = \Drupal::token()->replace($body, array('user' => $account));
 
     $message['subject'] .= $subject;
-    $body              = MailFormatHelper::htmlToText($body);
     $message['body'][] = MailFormatHelper::htmlToText($body);
   }
 }
