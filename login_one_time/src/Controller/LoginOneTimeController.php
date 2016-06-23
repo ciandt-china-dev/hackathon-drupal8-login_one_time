@@ -76,7 +76,7 @@ class LoginOneTimeController extends ControllerBase {
 
           // Integrate with the rules module, see login_one_time.rules.inc.
           if (\Drupal::moduleHandler()->moduleExists('rules')) {
-            rules_invoke_event('login_one_time_used', $user);
+            //rules_invoke_event('login_one_time_send_one_time_email', $user);
           }
 
           \Drupal::moduleHandler()->invokeAll('login_one_time_used', [$user]);
