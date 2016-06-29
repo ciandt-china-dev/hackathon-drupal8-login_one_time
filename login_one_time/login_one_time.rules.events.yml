@@ -1,5 +1,5 @@
-login_one_time_used:
-  label: 'When the user has used their one time login.'
+rules_login_one_time_used:
+  label: 'When the user has used their one time login'
   category: 'Login one time'
   context:
     account:

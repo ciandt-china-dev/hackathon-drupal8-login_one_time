@@ -10,6 +10,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\user\Entity\User;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Drupal\login_one_time\Event\LoginOneTimeUsedEvent;
 /**
  * Deal with one time login.
  */
@@ -77,6 +78,9 @@ class LoginOneTimeController extends ControllerBase {
           // Integrate with the rules module, see login_one_time.rules.inc.
           if (\Drupal::moduleHandler()->moduleExists('rules')) {
             //rules_invoke_event('login_one_time_send_one_time_email', $user);
+            $event = new LoginOneTimeUsedEvent($account);
+            $event_dispatcher = \Drupal::service('event_dispatcher');
+            $event_dispatcher->dispatch(LoginOneTimeUsedEvent::EVENT_NAME, $event);
           }
 
           \Drupal::moduleHandler()->invokeAll('login_one_time_used', [$user]);

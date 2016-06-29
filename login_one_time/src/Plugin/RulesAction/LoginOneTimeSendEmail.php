@@ -7,14 +7,14 @@
 namespace Drupal\login_one_time\Plugin\RulesAction;
 
 use Drupal\rules\Core\RulesActionBase;
-use Drupal\user\UserInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\login_one_time\LoginOneTimeSendMail;
 
 /**
  * Provides a 'Send login one time' action.
  *
  * @RulesAction(
- *   id = "login_one_time_send_one_time_email",
+ *   id = "rules_login_one_time_send_email",
  *   label = @Translation("Send a login one-time email."),
  *   category = @Translation("User"),
  *   context = {
@@ -29,7 +29,14 @@ use Drupal\login_one_time\LoginOneTimeSendMail;
  *   }
  * )
  */
-class SendOneTimeEmail extends RulesActionBase {
+class LoginOneTimeSendEmail extends RulesActionBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
+    return $object->hasPermission('send link to login one time');
+  }
 
   /**
    * Send account email.
@@ -39,8 +46,10 @@ class SendOneTimeEmail extends RulesActionBase {
    * @param string $email_type
    *   Type of email to be sent.
    */
-  protected function doExecute(UserInterface $user, $path) {
-    $server_mail = new LoginOneTimeSendMail();
-    $server_mail->sendMail($user, $path);
+  protected function doExecute(AccountInterface $user, $path) {
+    if ($user !== FALSE && $user->isActive()) {
+      $server_mail = new LoginOneTimeSendMail();
+      $server_mail->sendMail($user, $path);
+    }
   }
 }
